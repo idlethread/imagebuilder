@@ -56,7 +56,7 @@ elif [ "$board" = sdm835 ]; then
 elif [ "$board" = vipertooth ]; then
     arch=arm64
     pagesize=2048
-    dtb=arch/arm64/boot/dts/qcom/qcs404-evb.dtb
+    dtb=arch/arm64/boot/dts/qcom/qcs404-evb-1000.dtb
     id=evb405-1k-2
     console=ttyMSM0
     cdbahost="qc.lab"
@@ -103,6 +103,7 @@ MODULES_CPIO=$MODULES_CPIO_PREFIX-$board.cpio.gz
 
 mkdir -p $buildpath
 rm -rf $modpath $MODULES_CPIO $INITRAMFS_CPIO
+rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up stale dtbs
 
 # Check if pre-built rootfs is available
 [ -f $ROOTFS_CPIO ] || { echo "run build-buildroot.sh first"; exit 1; }
