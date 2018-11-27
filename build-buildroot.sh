@@ -10,8 +10,14 @@ git reset --hard $BUILDROOT_TAG
 #make distclean
 
 printf "%s" \
+      'CONFIG_TASKSET=y
+CONFIG_FEATURE_TASKSET_FANCY=y
+' > busybox.fragment
+
+printf "%s" \
 'BR2_aarch64=y
 BR2_TOOLCHAIN_EXTERNAL=y
+BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="busybox.fragment"
 BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
 BR2_PACKAGE_STRACE=y
 BR2_PACKAGE_TRACE_CMD=y
