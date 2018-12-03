@@ -113,7 +113,7 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 
 #KERNELRELEASE=`make kernelversion`-amit
 
-echo "Starting kernel build..."
+echo "Starting kernel build ($KERNEL_TREE)..."
 cd $KERNEL_TREE
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
 
