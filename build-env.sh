@@ -30,7 +30,7 @@ J_FACTOR="$(($(nproc)-1))"  # leave some cpu for interactivity
 cd $CDBA_TREE
 #git pull --ff-only
 
-[ -d $BOOTRR_TREE ] || git clone https://github.com/andersson/cdba $BOOTRR_TREE
+[ -d $BOOTRR_TREE ] || git clone https://github.com/andersson/bootrr $BOOTRR_TREE
 cd $BOOTRR_TREE
 #git pull --ff-only
 
