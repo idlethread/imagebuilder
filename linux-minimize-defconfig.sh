@@ -8,14 +8,17 @@
 # Enable PM features I want
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable WQ_POWER_EFFICIENT_DEFAULT
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM64_CPUIDLE
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DT
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DT
 
 # Disable PM features I don't want
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable CPU_IDLE_GOV_LADDER
 
 # Enable Qcom features I want
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_LMH
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_TEMP_ALARM
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_HW
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_ADC5
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
@@ -49,7 +52,7 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_VEXPRESS
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_XGENE
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ZX
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ZYNCMP
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ZYNQMP
 
 # Downstream msm-3.18 kernel stuff to disable
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MSMCOBALT
@@ -63,5 +66,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 
 # Disable misc features
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable IPV6
+
+# Temporarily enable some test configs
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_TEMP_ALARM
 
 #sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
