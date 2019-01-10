@@ -78,7 +78,7 @@ fi
 # Create a kernel command-line
 #KERN_CMDLINE="root=/dev/disk/by-partlabel/rootfs rw rootwait console=ttyMSM0,115200n8 text"
 #KERN_CMDLINE="root=/dev/ram0 rw rootwait console=tty0 console=ttyMSM0,115200n8 ignore_loglevel debug# ftrace=function"
-KERN_CMDLINE="earlycon console=tty0 console=ttyMSM0,115200n8"
+KERN_CMDLINE="earlycon console=tty0 console=\"$console\",115200n8"
 #KERN_CMDLINE="earlyprintk=serial,"$console",115200n8 console="$console",115200n8"
 #KERN_CMDLINE="earlycon console=tty0 console=ttyHSL0,115200n8 ignore_loglevel"
 
