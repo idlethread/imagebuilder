@@ -50,6 +50,9 @@ make
 rm -rf tmp-scripts
 
 mkdir -p tmp-scripts/etc
+mkdir -p tmp-scripts/etc/udev/rules.d
+mkdir -p tmp-scripts/etc/profile.d
+mkdir -p tmp-scripts/root
 
 sed 's,console::respawn:/sbin/getty -L  console 0 vt100 # GENERIC_SERIAL,console::respawn:-/bin/sh,g' $BUILDROOT_TREE/output/target/etc/inittab > tmp-scripts/etc/inittab
 
@@ -58,11 +61,14 @@ sed -i '\,::sysinit:/bin/mount -a,a ::sysinit:/bin/mount -t debugfs nodev /sys/k
 sed -i '\,::sysinit:/bin/mount -a,a ::sysinit:/bin/ln -s /sys/kernel/tracing /tracing' tmp-scripts/etc/inittab
 sed -i '\,::sysinit:/bin/mount -a,a ::sysinit:/bin/mount -t tracefs nodev /sys/kernel/tracing' tmp-scripts/etc/inittab
 
-#touch tmp-scripts/etc/udev/rules.d/80-net-name-slot.rules
-
-mkdir -p tmp-scripts/etc/udev/rules.d
-
 touch tmp-scripts/etc/udev/rules.d/80-net-name-slot.rules
+
+# Set up shell environment
+printf "%s" \
+'
+PS1="--o \u@\h o--(\w) \$ "
+
+' > tmp-scripts/etc/profile.d/shell.sh
 
 cd tmp-scripts
 find . | cpio -o -H newc | gzip -9 > $ROOTFSTWEAKS_CPIO
