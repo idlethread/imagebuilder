@@ -10,7 +10,7 @@ KERNEL_TREE=${KERNEL_TREE:-$DEFAULT_KERNEL_TREE}
 CDBA_TREE=~/work/sources/cdba.git
 BOOTRR_TREE=~/work/sources/bootrr.git
 BUILDROOT_TREE=~/work/sources/buildroot
-BUILDROOT_TAG=2018.08.2
+BUILDROOT_TAG=2018.11.1
 KERNELCFG_TWEAK_SCRIPT=~/bin/linux-minimize-defconfig.sh
 
 # Top-level directory for various build object files
