@@ -5,6 +5,12 @@
 
 . ~/bin/build-env.sh
 
+# Enable some trace/debug infrastructure
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FTRACE
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FUNCTION_TRACER
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable LATENCYTOP
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable SCHEDSTATS
+
 # Enable PM features I want
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable WQ_POWER_EFFICIENT_DEFAULT
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM64_CPUIDLE
@@ -66,8 +72,5 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 
 # Disable misc features
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable IPV6
-
-# Temporarily enable some test configs
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_TEMP_ALARM
 
 #sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
