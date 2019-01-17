@@ -6,6 +6,7 @@
 . ~/bin/build-env.sh
 
 cd $BUILDROOT_TREE
+git fetch
 git reset --hard $BUILDROOT_TAG
 #make distclean
 
