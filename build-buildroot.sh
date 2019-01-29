@@ -52,11 +52,13 @@ printf "%s" \
 
 printf "%s" \
 'BR2_aarch64=y
+BR2_CCACHE=y
 BR2_SYSTEM_DEFAULT_PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/root/bin"
 BR2_ROOTFS_DEVICE_TABLE="system/device_table.txt system/qclt_device_table.txt"
 BR2_TOOLCHAIN_EXTERNAL=y
 BR2_PACKAGE_BUSYBOX_CONFIG_FRAGMENT_FILES="busybox.fragment"
 BR2_ROOTFS_DEVICE_CREATION_DYNAMIC_EUDEV=y
+BR2_PACKAGE_WIRELESS_REGDB=y
 BR2_PACKAGE_STRACE=y
 BR2_PACKAGE_TRACE_CMD=y
 BR2_PACKAGE_POWERTOP=y
