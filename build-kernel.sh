@@ -108,6 +108,7 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 # Check if pre-built rootfs is available
 [ -f $ROOTFS_CPIO ] || { echo "run build-buildroot.sh first"; exit 1; }
 [ -f $ROOTFSTWEAKS_CPIO ] || { echo "run build-buildroot.sh first"; exit 1; }
+[ -f $UTILS_CPIO ] || { echo "run build-utils.sh first"; exit 1; }
 
 # Build kernel and modules
 
@@ -139,7 +140,7 @@ cat $zImage $buildpath/$dtb > $IMAGE_DIR/zImage-$board
 #cp $myprogs $IMAGE_DIR/
 
 echo "Merge all the cpio archives together..."
-cat $ROOTFS_CPIO $ROOTFSTWEAKS_CPIO $MODULES_CPIO > $INITRAMFS_CPIO
+cat $ROOTFS_CPIO $ROOTFSTWEAKS_CPIO $MODULES_CPIO $UTILS_CPIO > $INITRAMFS_CPIO
 
 mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO --output $IMAGE_DIR/image-$board --pagesize $pagesize --base 0x80000000 --cmdline "$KERN_CMDLINE"
 
