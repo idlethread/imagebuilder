@@ -61,6 +61,14 @@ elif [ "$board" = vipertooth ]; then
     console=ttyMSM0
     cdbahost="qc.lab"
     conf=defconfig
+elif [ "$board" = vipertooth-mistral ]; then
+    arch=arm64
+    pagesize=2048
+    dtb=arch/arm64/boot/dts/qcom/qcs404-mistral.dtb
+    id=evb405-4k-1
+    console=ttyMSM0
+    cdbahost="qc.lab"
+    conf=defconfig
 elif [ "$board" = db820c-3.18 ]; then
     arch=arm64
     pagesize=4096
@@ -147,6 +155,16 @@ mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO --output $
 # We use cdba to test a subset of boards and manual testing for the rest.
 # Print both commands for copy-paste ease
 #$CDBA_TREE/cdba -b $id -h $cdbahost $IMAGE_DIR/image-$board
-echo "$CDBA_TREE/cdba -b $id -h $cdbahost $IMAGE_DIR/image-$board"
+echo "scp $INITRAMFS_CPIO $IMAGE_DIR/zImage-$board qc.lab:~"
+echo "cat initramfs.cpio.gz wifi-cherokee.cpio.gz > final.cpio.gz"
+echo "mkbootimg --kernel zImage-$board --ramdisk final.cpio.gz --output image-$board --pagesize $pagesize --base 0x80000000 --cmdline \"$KERN_CMDLINE\""
+echo "~/sandbox/cdba/cdba -b evb405-1k-2 -h localhost image-vipertooth"
+echo ""
 echo "OR"
+echo ""
+echo "$CDBA_TREE/cdba -b $id -h $cdbahost $IMAGE_DIR/image-$board"
+echo ""
+echo "OR"
+echo ""
 echo "sudo fastboot boot $IMAGE_DIR/image-$board"
+scp $INITRAMFS_CPIO $IMAGE_DIR/zImage-$board qc.lab:~
