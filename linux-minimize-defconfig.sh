@@ -26,6 +26,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_HW
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_ADC5
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_SNOC
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ATH10K_DEBUG
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_DEBUGFS
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
