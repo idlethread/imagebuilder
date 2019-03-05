@@ -12,6 +12,8 @@ else
     exit
 fi
 
+[ "$2" ] && KERN_CMDLINE_EXT="$2"
+
 # In POSIX shell, = is used instead of ==
 if [ "$board" = db410c ]; then
     arch=arm64
@@ -98,7 +100,7 @@ KERN_CMDLINE="earlycon console=tty0 console=\"$console\",115200n8"
 #KERN_CMDLINE="earlyprintk=serial,"$console",115200n8 console="$console",115200n8"
 #KERN_CMDLINE="earlycon console=tty0 console=ttyHSL0,115200n8 ignore_loglevel"
 
-[ "$2" ] && KERN_CMDLINE="$KERN_CMDLINE $2"
+KERN_CMDLINE="$KERN_CMDLINE $KERNEL_CMDLINE_EXT"
 
 if [ "$arch" = arm64 ]; then
     compiler=aarch64-linux-gnu-
