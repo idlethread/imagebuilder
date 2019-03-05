@@ -28,6 +28,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_SNOC
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ATH10K_DEBUG
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_DEBUGFS
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCS_GCC_404
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable PINCTRL_QCS404
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
