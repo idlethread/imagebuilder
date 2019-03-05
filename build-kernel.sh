@@ -42,6 +42,15 @@ elif [ "$board" = db820c ]; then
     console=ttyMSM0
     cdbahost=localhost
     conf=defconfig
+elif [ "$board" = db820c-3.18 ]; then
+    arch=arm64
+    pagesize=4096
+    dtb=arch/arm64/boot/dts/qcom/apq8096-v3-dragonboard.dtb
+    id=dd4541f9
+    console=ttyHSL0
+    cdbahost=localhost
+    PATH=/home/amit/work/toolchains/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:$PATH
+    conf=msm_defconfig
 elif [ "$board" = db845c ]; then
     arch=arm64
     pagesize=2048
@@ -90,15 +99,6 @@ elif [ "$board" = vipertooth-mistral ]; then
     console=ttyMSM0
     cdbahost="qc.lab"
     conf="chromeos/config/base.config chromeos/config/arm64/common.config chromeos/config/arm64/chromiumos-qualcomm.flavour.config"
-elif [ "$board" = db820c-3.18 ]; then
-    arch=arm64
-    pagesize=4096
-    dtb=arch/arm64/boot/dts/qcom/apq8096-v3-dragonboard.dtb
-    id=dd4541f9
-    console=ttyHSL0
-    cdbahost=localhost
-    PATH=/home/amit/work/toolchains/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:$PATH
-    conf=msm_defconfig
 else
     echo unsupported board
     exit
