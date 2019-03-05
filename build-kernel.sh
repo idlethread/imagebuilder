@@ -8,11 +8,14 @@
 if [ "$1" ]; then
     board=$1
 else
-    echo "usage: $0 <board> [<kernel-cmd-line>]"
+    echo "usage: $0 <board> [<profile>] [<kernel-cmd-line>]"
+    echo "usage: $0 db410c linux"
     exit
 fi
 
-[ "$2" ] && KERN_CMDLINE_EXT="$2"
+[ "$2" ] && PROF="$2"
+
+[ "$3" ] && KERN_CMDLINE_EXT="$3"
 
 # In POSIX shell, = is used instead of ==
 if [ "$board" = db410c ]; then
@@ -134,7 +137,14 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 
 echo "Starting kernel build ($KERNEL_TREE)..."
 cd $KERNEL_TREE
-ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+if [ "$PROF" = linux ]; then
+	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+elif [ "$PROF" = chrome ]; then
+	./chromeos/scripts/prepareconfig chromiumos-qualcomm $buildpath/.config
+else
+	echo "Invalid profile, using defconfig"
+	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+fi
 
 # Tweak the config a bit and run olddefconfig
 $KERNELCFG_TWEAK_SCRIPT
