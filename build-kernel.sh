@@ -50,7 +50,7 @@ elif [ "$board" = db845c ]; then
     console=ttyMSM0
     cdbahost="localhost"
     conf=defconfig
-elif [ "$board" = sdm845 ]; then
+elif [ "$board" = sdm845-mtp ]; then
     arch=arm64
     pagesize=2048
     dtb=arch/arm64/boot/dts/qcom/sdm845-mtp.dtb
@@ -58,7 +58,7 @@ elif [ "$board" = sdm845 ]; then
     console=ttyMSM0
     cdbahost="qc.lab"
     conf=defconfig
-elif [ "$board" = sdm835 ]; then
+elif [ "$board" = sdm835-mtp ]; then
     arch=arm64
     pagesize=4096
     dtb=arch/arm64/boot/dts/qcom/msm8998-mtp.dtb
@@ -66,11 +66,11 @@ elif [ "$board" = sdm835 ]; then
     console=ttyMSM0
     cdbahost="qc.lab"
     conf=defconfig
-elif [ "$board" = vipertooth ]; then
+elif [ "$board" = vipertooth-4k ]; then
     arch=arm64
     pagesize=2048
-    dtb=arch/arm64/boot/dts/qcom/qcs404-evb-1000.dtb
-    id=evb405-1k-2
+    dtb=arch/arm64/boot/dts/qcom/qcs404-evb-4000.dtb
+    id=evb405-4k-2
     console=ttyMSM0
     cdbahost="qc.lab"
     conf=defconfig
@@ -81,7 +81,7 @@ elif [ "$board" = vipertooth-mistral ]; then
     id=evb405-4k-1
     console=ttyMSM0
     cdbahost="qc.lab"
-    conf=defconfig
+    conf="chromeos/config/base.config chromeos/config/arm64/common.config chromeos/config/arm64/chromiumos-qualcomm.flavour.config"
 elif [ "$board" = db820c-3.18 ]; then
     arch=arm64
     pagesize=4096
@@ -116,7 +116,7 @@ elif [ "$arch" = arm ]; then
     modpath="$BUILD_ROOTDIR/mod-arm"
     zImage="$buildpath/arch/arm/boot/zImage"
 else
-    echo unsupported arch
+    echo "unsupported arch"
     exit
 fi
 
