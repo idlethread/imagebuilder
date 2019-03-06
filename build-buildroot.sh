@@ -37,24 +37,24 @@ J_FACTOR="$(($(nproc)-1))"
 # Functions
 
 function pr_throttle() {
-        echo "throttling: "
-        find /sys/class/thermal/cooling_device* -maxdepth 1 | while read d; do
-                paste $d/cur_state $d/max_state;
-        done;
+	echo "throttling: "
+	find /sys/class/thermal/cooling_device* -maxdepth 0 | while read d; do
+		paste $d/cur_state $d/max_state;
+	done;
 }
 
 function pr_tz() {
-        echo "temp: "
-        find /sys/class/thermal/thermal_zone* -maxdepth 1 | while read d; do
-                paste $d/type $d/temp;
-        done;
+	echo "temp: "
+	find /sys/class/thermal/thermal_zone* -maxdepth 0 | while read d; do
+		paste $d/type $d/temp;
+	done;
 }
 
 function pr_cpufreq() {
-        echo "freq: "
-        find /sys/devices/system/cpu/cpufreq/policy* -maxdepth 1 -type d| while read d; do
-                paste cpus: $d/related_cpus $d/scaling_cur_freq $d/scaling_max_freq;
-        done;
+	echo "freq: "
+	find /sys/devices/system/cpu/cpufreq/policy* -maxdepth 0 -type d| while read d; do
+		paste $d/related_cpus $d/scaling_cur_freq $d/scaling_max_freq;
+	done;
 }
 
 function dump_statistics() {
