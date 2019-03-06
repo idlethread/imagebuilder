@@ -36,21 +36,21 @@ J_FACTOR="$(($(nproc)-1))"
 
 # Functions
 
-function print_cdev_throttle_state() {
+function pr_throttle() {
         echo "throttling: "
         find /sys/class/thermal/cooling_device* -maxdepth 1 | while read d; do
                 paste $d/cur_state $d/max_state;
         done;
 }
 
-function print_tz_temps() {
+function pr_tz() {
         echo "temp: "
         find /sys/class/thermal/thermal_zone* -maxdepth 1 | while read d; do
                 paste $d/type $d/temp;
         done;
 }
 
-function print_cpu_frequencies() {
+function pr_cpufreq() {
         echo "freq: "
         find /sys/devices/system/cpu/cpufreq/policy* -maxdepth 1 -type d| while read d; do
                 paste cpus: $d/related_cpus $d/scaling_cur_freq $d/scaling_max_freq;
@@ -60,9 +60,9 @@ function print_cpu_frequencies() {
 function dump_statistics() {
         pid=$1
         while kill -0 $pid; do
-                print_tz_temps;
-                print_cdev_throttle_state;
-                print_cpu_frequencies;
+                pr_tz;
+                pr_throttle;
+                pr_cpufreq;
                 sleep 5;
         done
 }
@@ -71,8 +71,6 @@ function run_cpu_stressor() {
         name=$1
         stress-ng --cpu 0 --cpu-method $name -t 60;
 }
-
-
 ' > system/skeleton/etc/profile.d/shell.sh
 
 mkdir -p system/skeleton/etc/init.d
