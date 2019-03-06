@@ -141,17 +141,18 @@ echo "Starting kernel build ($KERNEL_TREE)..."
 cd $KERNEL_TREE
 if [ "$PROF" = linux ]; then
 	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+	# Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT
 elif [ "$PROF" = chrome ]; then
 	./chromeos/scripts/prepareconfig chromiumos-qualcomm $buildpath/.config
 else
 	echo "Invalid profile, using defconfig"
 	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+	# Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT
 fi
 
-# Tweak the config a bit and run olddefconfig
-$KERNELCFG_TWEAK_SCRIPT
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
-
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
 ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 
