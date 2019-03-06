@@ -58,18 +58,18 @@ function pr_cpufreq() {
 }
 
 function dump_statistics() {
-        pid=$1
-        while kill -0 $pid; do
-                pr_tz;
-                pr_throttle;
-                pr_cpufreq;
-                sleep 5;
-        done
+	pid=$1
+	while kill -0 $pid; do
+		pr_tz;
+		pr_throttle;
+		pr_cpufreq;
+		sleep 5;
+	done
 }
 
 function run_cpu_stressor() {
-        name=$1
-        stress-ng --cpu 0 --cpu-method $name -t 60;
+	name=$1
+	stress-ng --cpu 0 --cpu-method $name -t 60;
 }
 ' > system/skeleton/etc/profile.d/shell.sh
 
