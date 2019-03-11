@@ -48,6 +48,7 @@ function pr_tz() {
 	find /sys/class/thermal/thermal_zone* -maxdepth 0 | while read d; do
 		paste $d/type $d/temp;
 	done;
+	grep "" /sys/bus/iio/devices/iio:device0/in_temp_*
 }
 
 function pr_cpufreq() {
