@@ -49,6 +49,7 @@ function pr_tz() {
 		paste $d/type $d/temp;
 	done;
 	grep "" /sys/bus/iio/devices/iio:device0/in_temp_*
+	cat /sys/class/ieee80211/phy1/device/hwmon/hwmon0/temp1_input
 }
 
 function pr_cpufreq() {
