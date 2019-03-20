@@ -31,20 +31,3 @@ INITRAMFS_CPIO=$IMAGE_DIR/initramfs.cpio.gz
 UTILS_CPIO=$IMAGE_DIR/utils.cpio.gz
 J_FACTOR="$(($(nproc)-1))"  # leave some cpu for interactivity
 
-[ -d $CDBA_TREE ] || git clone https://github.com/andersson/cdba $CDBA_TREE
-cd $CDBA_TREE
-#git pull --ff-only
-
-[ -d $BOOTRR_TREE ] || git clone https://github.com/andersson/bootrr $BOOTRR_TREE
-cd $BOOTRR_TREE
-#git pull --ff-only
-
-[ -d $QRTR_TREE ] || git clone https://github.com/andersson/qrtr $QRTR_TREE
-cd $QRTR_TREE
-#git pull --ff-only
-
-[ -d $BUILDROOT_TREE ] || git clone git://git.buildroot.net/buildroot $BUILDROOT_TREE
-cd $BUILDROOT_TREE
-#git pull --ff-only
-
-[ -d $IMAGE_DIR ] || mkdir -p $IMAGE_DIR

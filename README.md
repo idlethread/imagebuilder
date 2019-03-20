@@ -9,6 +9,8 @@ Only ever tested on a Ubuntu desktop with the default cross aarch64 toolchain an
 ## Usage
 - Copy the scripts to some directory in your path. e.g. I use ~/bin
 - Configure build-env.sh to suit your setup e.g. where you want sources, builds to go and artifact names.
+- Run setup-environment.sh once to make sure you have various sources and
+  directories configured based on settings in build-env.sh
 - Run build-buildroot.sh which should download and create a buildroot-based rootfs
 - Run build-kernel.sh <boardname> and sit back and relax
 - The final image can then be flashed onto your board using whatever means you generally use for that particular board.
