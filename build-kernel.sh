@@ -158,7 +158,7 @@ else
 	echo "Invalid profile, using defconfig"
 	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
 	# Tweak the config a bit
-	$KERNELCFG_TWEAK_SCRIPT
+	#$KERNELCFG_TWEAK_SCRIPT
 fi
 
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
