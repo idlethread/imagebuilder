@@ -30,4 +30,3 @@ MODULES_CPIO_PREFIX=$IMAGE_DIR/kernel-modules
 INITRAMFS_CPIO=$IMAGE_DIR/initramfs.cpio.gz
 UTILS_CPIO=$IMAGE_DIR/utils.cpio.gz
 J_FACTOR="$(($(nproc)-1))"  # leave some cpu for interactivity
-

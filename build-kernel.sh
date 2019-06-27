@@ -170,6 +170,10 @@ ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_
 #KBUILD_BUILD_TIMESTAMP='' ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
 #KBUILD_BUILD_TIMESTAMP='' ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 
+(cd $buildpath && \
+	aarch64-linux-gnu-objcopy -O binary vmlinux vmlinux.bin && \
+	lzma -f vmlinux.bin)
+
 echo "Copy kernel, dtb and modules to appropriate places..."
 cat $zImage $buildpath/$dtb > $IMAGE_DIR/zImage-$board
 (cd $modpath ; find . | cpio -o -H newc | gzip -9 > $MODULES_CPIO)
