@@ -145,6 +145,7 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 
 #KERNELRELEASE=`make kernelversion`-amit
 
+KERNEL_TREE=${kerndir:-`pwd`}
 echo "Starting kernel build ($KERNEL_TREE)..."
 cd $KERNEL_TREE
 if [ "$PROF" = linux ]; then
