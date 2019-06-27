@@ -47,6 +47,7 @@ elif [ "$board" = db820c-3.18 ]; then
     console=ttyHSL0
     cdbahost=localhost
     PATH=/home/amit/work/toolchains/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:$PATH
+    kcmdline_override="earlyprintk=serial,${console},115200n8 console=${console},115200n8"
     conf=msm_defconfig
 elif [ "$board" = db845c ]; then
     arch=arm64
@@ -103,6 +104,9 @@ con=${console:-ttyMSM0}
 #KERN_CMDLINE="root=/dev/ram0 rw rootwait console=tty0 console=ttyMSM0,115200n8 ignore_loglevel debug# ftrace=function"
 KERN_CMDLINE="earlycon console=tty0 console=${con},115200n8 ignore_loglevel"
 
+# Use board-specific cmdline, if available
+KERN_CMDLINE=${kcmdline_override:-$KERNEL_CMDLINE}
+# Any more options on in the KERNEL_CMDLINE_EXT env variable?
 KERN_CMDLINE="$KERN_CMDLINE $KERNEL_CMDLINE_EXT"
 
 if [ "$arch" = arm64 ]; then
