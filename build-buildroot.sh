@@ -145,6 +145,10 @@ function prcpufreq() {
 	done;
 }
 
+function pridle() {
+	 grep "" /sys/devices/system/cpu/cpu?/cpuidle/*/*
+}
+
 function prstats() {
 	pid=$1
 	while kill -0 $pid; do
