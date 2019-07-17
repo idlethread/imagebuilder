@@ -24,6 +24,7 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_LMH
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_TEMP_ALARM
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_HW
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_KRYO
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_ADC5
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_SNOC
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ATH10K_DEBUG
@@ -31,6 +32,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCS_GCC_404
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable PINCTRL_QCS404
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable THERMAL_STATISTICS
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_QMI_COOLING_DEVICE
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable SAMPLE_QMI_CLIENT
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
@@ -39,8 +42,10 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ACTIONS
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SUNXI
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ALPINE
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_AGILEX
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BCM2835
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BCM_IPROC
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BERLIN
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BRCMSTB
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_EXYNOS
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_K3
@@ -50,6 +55,7 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MEDIATEK
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MESON
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MVEBU
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MXC
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_REALTEK
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ROCKCHIP
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SEATTLE
