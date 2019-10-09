@@ -22,7 +22,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 
 # Enable Qcom features I want
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_LMH
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_TEMP_ALARM
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --module QCOM_SPMI_TEMP_ALARM
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --module QCOM_TSENS
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_HW
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_KRYO
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_ADC5
@@ -37,6 +38,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable NET_VENDOR_HISILICON
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable XEN
 
 # Disable sub-arches I don't care about
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ACTIONS
