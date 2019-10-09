@@ -166,6 +166,7 @@ fi
 
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
+ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR dtbs_check
 ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 
 # Speed up ccache a bit by disabling build timestamp
