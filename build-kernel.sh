@@ -10,6 +10,7 @@ if [ "$1" ]; then
 else
     echo "usage: $0 <board> [<profile>] [<kernel-cmd-line>]"
     echo "usage: $0 db410c linux"
+    echo "usage: kerndir="." $0 db410c linux "initcall_debug""
     exit
 fi
 
@@ -47,7 +48,7 @@ elif [ "$board" = db820c-3.18 ]; then
     console=ttyHSL0
     cdbahost=localhost
     PATH=/home/amit/work/toolchains/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:$PATH
-    kcmdline_override="earlyprintk=serial,${console},115200n8 console=${console},115200n8"
+    board_kernel_cmdline="earlyprintk=serial,${console},115200n8 console=${console},115200n8"
     conf=msm_defconfig
 elif [ "$board" = db845c ]; then
     arch=arm64
@@ -60,7 +61,7 @@ elif [ "$board" = sdm845-mtp ]; then
     arch=arm64
     pagesize=2048
     dtb=arch/arm64/boot/dts/qcom/sdm845-mtp.dtb
-    id=sdm845-mtp-5
+    id=sdm845-mtp-3
     cdbahost="qc.lab"
     conf=defconfig
 elif [ "$board" = sdm835-mtp ]; then
@@ -101,13 +102,15 @@ con=${console:-ttyMSM0}
 
 # Create a kernel command-line
 #KERN_CMDLINE="root=/dev/disk/by-partlabel/rootfs rw rootwait console=ttyMSM0,115200n8 text"
-#KERN_CMDLINE="root=/dev/ram0 rw rootwait console=tty0 console=ttyMSM0,115200n8 ignore_loglevel debug# ftrace=function"
-KERN_CMDLINE="earlycon console=tty0 console=${con},115200n8 ignore_loglevel"
+#KERN_CMDLINE="root=/dev/ram0 rw rootwait console=tty0 console=ttyMSM0,115200n8 ignore_loglevel debug ftrace=function"
+DEFAULT_KERNEL_CMDLINE="earlycon console=tty0 console=${con},115200n8 ignore_loglevel"
+#DEFAULT_KERNEL_CMDLINE="earlycon console=tty0 console=${con},115200n8 ignore_loglevel initcall_debug"
 
 # Use board-specific cmdline, if available
-KERN_CMDLINE=${kcmdline_override:-$KERNEL_CMDLINE}
+KERN_CMDLINE=${board_kernel_cmdline:-$DEFAULT_KERNEL_CMDLINE}
+
 # Any more options on in the KERNEL_CMDLINE_EXT env variable?
-KERN_CMDLINE="$KERN_CMDLINE $KERNEL_CMDLINE_EXT"
+KERN_CMDLINE="$KERN_CMDLINE $KERN_CMDLINE_EXT"
 
 if [ "$arch" = arm64 ]; then
     compiler=aarch64-linux-gnu-
@@ -186,7 +189,10 @@ cat $zImage $buildpath/$dtb > $IMAGE_DIR/zImage-$board
 echo "Merge all the cpio archives together..."
 cat $ROOTFS_CPIO $ROOTFSTWEAKS_CPIO $MODULES_CPIO $UTILS_CPIO > $INITRAMFS_CPIO
 
-mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO --output $IMAGE_DIR/image-$board --pagesize $pagesize --base 0x80000000 --cmdline "$KERN_CMDLINE"
+echo "Using cmdline: $KERN_CMDLINE"
+mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO \
+--output $IMAGE_DIR/image-$board --pagesize $pagesize --base 0x80000000 \
+--cmdline "$KERN_CMDLINE"
 
 # We use cdba to test a subset of boards and manual testing for the rest.
 # Print both commands for copy-paste ease
