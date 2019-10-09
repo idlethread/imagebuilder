@@ -11,8 +11,8 @@ CDBA_TREE=~/work/sources/cdba.git
 BOOTRR_TREE=~/work/sources/bootrr.git
 QRTR_TREE=~/work/sources/qrtr.git
 BUILDROOT_TREE=~/work/sources/buildroot
-#BUILDROOT_TAG=2018.11.1
-BUILDROOT_TAG="origin/master"
+BUILDROOT_TAG=2019.08.1
+#BUILDROOT_TAG="origin/master"
 KERNELCFG_TWEAK_SCRIPT=~/bin/linux-minimize-defconfig.sh
 
 # Top-level directory for various build object files
