@@ -166,8 +166,17 @@ fi
 
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
-ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR dtbs_check
-ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
+#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR dtbs_check
+ARCH=$arch CROSS_COMPILE="$compiler" make -s O=$buildpath modules_install \
+    INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
+ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install \
+    DESTDIR=$UTIL_FS
+	#EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
+	#CFLAGS="--sysroot=$BUILDROOT_TREE/output/host/aarch64-buildroot-linux-gnu/sysroot -O2 -pipe -g -feliminate-unused-debug-types -fno-omit-frame-pointer -march=armv8-a -funwind-tables" \
+	#LDFLAGS="-L$BUILDROOT_TREE/output/target/usr/lib -L$BUILDROOT_TREE/output/target/usr/lib/elfutils $LDFLAGS" \
+
+# Rebuild UTILS_CPIO to include perf updates
+(cd $UTIL_FS; find . | cpio -o -H newc | gzip -9 > $UTILS_CPIO)
 
 # Speed up ccache a bit by disabling build timestamp
 # http://nickdesaulniers.github.io/blog/2018/06/02/speeding-up-linux-kernel-builds-with-ccache/

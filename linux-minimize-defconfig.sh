@@ -10,6 +10,7 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FUNCTION_TRACER
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable LATENCYTOP
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable SCHEDSTATS
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FUNCTION_PROFILER
 
 # Enable PM features I want
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable WQ_POWER_EFFICIENT_DEFAULT
@@ -89,3 +90,18 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disabl
 #$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable IPV6
 
 #sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
+
+# Enable debug features
+#CONFIG_DEBUG_SECTION_MISMATCH
+#KASAN
+#CONFIG_DEBUG_KMEMLEAK
+#CONFIG_LOCK_STAT
+#CONFIG_EVENT_TRACING
+#CONFIG_DEBUG_SPINLOCK
+#CONFIG_DEBUG_MUTEXES
+#CONFIG_DEBUG_RWSEMS
+#CONFIG_DEBUG_LOCK_ALLOC
+#CONFIG_DEBUG_ATOMIC_SLEEP
+
+#CONFIG_FTRACE_SYSCALLS
+#CONFIG_DEBUG_ALIGN_RODATA
