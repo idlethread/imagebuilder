@@ -49,6 +49,7 @@ alias stress="stress-ng --matrix 0 --matrix-size 64 --tz -t 600 &"
 alias stress404="stress-ng --matrix 2 --matrix-size 64 --tz -t 600 --taskset 0,3 &"
 # id 1, 7
 alias stress845="stress-ng --matrix 2 --matrix-size 64 --tz -t 600 --taskset 0,4 &"
+alias stress845-cpu7="stress-ng --matrix 1 --matrix-size 64 --tz -t 600 --taskset 7 &"
 
 J_FACTOR="$(($(nproc)-1))"
 
@@ -103,7 +104,17 @@ function run_cpu_stressor() {
         name=$1
         stress-ng --cpu 0 --cpu-method $name -t 60;
 }
-' > $prof/shell.sh
+
+function run_trace() {
+	prirq
+	prtz
+	funccount -d 10 "thermal_zone_device_*"
+	prirq
+	stress-ng --matrix 1 --matrix-size 64 --tz -t 100 --taskset 7 &
+	funccount -d 100 "thermal_zone_device_*"
+	prirq
+}
+	' > $prof/shell.sh
 
 # Init script
 INIT="$UTIL_FS/etc/init.d"
