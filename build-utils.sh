@@ -14,6 +14,14 @@ mkdir -p $UTIL_FS
 cd $QRTR_TREE
 CROSS_COMPILE="ccache $compiler" make install DESTDIR=$UTIL_FS
 
+# Bootrr
+cd $BOOTRR_TREE
+make install DESTDIR=$UTIL_FS prefix=/usr
+
+# Brendan's perf utils
+rsync -avzhP $BRENDAN_PERF_TOOLS_TREE $UTIL_FS/root
+#chown -R root:root $UTIL_FS/root
+
 # Foo
 #touch $UTIL_FS/foo
 
@@ -24,6 +32,7 @@ mkdir -p $prof
 printf "%s" \
        '# Prompt
 PS1="--o \h o--(\w) \$ "
+PATH=$PATH:/root/tools-perf-brendan-greg.git/bin
 
 # Aliases
 alias la="ls -a"
