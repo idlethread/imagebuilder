@@ -97,6 +97,8 @@ else
     exit
 fi
 
+# Use default 'ttyMSM0' for console if there is no board-specific override
+# above
 con=${console:-ttyMSM0}
 #echo "********** $con"
 
@@ -112,25 +114,36 @@ KERN_CMDLINE=${board_kernel_cmdline:-$DEFAULT_KERNEL_CMDLINE}
 # Any more options on in the KERNEL_CMDLINE_EXT env variable?
 KERN_CMDLINE="$KERN_CMDLINE $KERN_CMDLINE_EXT"
 
-if [ "$arch" = arm64 ]; then
-    compiler=aarch64-linux-gnu-
-    buildpath="$BUILD_ROOTDIR/build-aarch64"
-    modpath="$BUILD_ROOTDIR/mod-aarch64"
+if [ "$PROF" = check ]; then
+    if [ "$arch" = arm64 ]; then
+        compiler=aarch64-linux-gnu-
+    elif [ "$arch" = arm ]; then
+        compiler=arm-linux-gnueabihf-
+    fi
+    buildpath="$BUILD_ROOTDIR/build-check"
+    modpath="$BUILD_ROOTDIR/mod-check"
     zImage="$buildpath/arch/arm64/boot/Image.gz"
-elif [ "$arch" = arm64-old ]; then
-    arch=arm64
-    compiler=aarch64-linux-gnu-
-    buildpath="$BUILD_ROOTDIR/build-aarch64-old"
-    modpath="$BUILD_ROOTDIR/mod-aarch64-old"
-    zImage="$buildpath/arch/arm64/boot/Image.gz"
-elif [ "$arch" = arm ]; then
-    compiler=arm-linux-gnueabihf-
-    buildpath="$BUILD_ROOTDIR/build-arm"
-    modpath="$BUILD_ROOTDIR/mod-arm"
-    zImage="$buildpath/arch/arm/boot/zImage"
 else
-    echo "unsupported arch"
-    exit
+    if [ "$arch" = arm64 ]; then
+        compiler=aarch64-linux-gnu-
+        buildpath="$BUILD_ROOTDIR/build-aarch64"
+        modpath="$BUILD_ROOTDIR/mod-aarch64"
+        zImage="$buildpath/arch/arm64/boot/Image.gz"
+    elif [ "$arch" = arm64-old ]; then
+        arch=arm64
+        compiler=aarch64-linux-gnu-
+        buildpath="$BUILD_ROOTDIR/build-aarch64-old"
+        modpath="$BUILD_ROOTDIR/mod-aarch64-old"
+        zImage="$buildpath/arch/arm64/boot/Image.gz"
+    elif [ "$arch" = arm ]; then
+        compiler=arm-linux-gnueabihf-
+        buildpath="$BUILD_ROOTDIR/build-arm"
+        modpath="$BUILD_ROOTDIR/mod-arm"
+        zImage="$buildpath/arch/arm/boot/zImage"
+    else
+        echo "unsupported arch"
+        exit
+    fi
 fi
 
 MODULES_CPIO=$MODULES_CPIO_PREFIX-$board.cpio.gz
@@ -149,26 +162,53 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 #KERNELRELEASE=`make kernelversion`-amit
 
 KERNEL_TREE=${kerndir:-`pwd`}
-echo "Starting kernel build ($KERNEL_TREE)..."
+echo "Building $arch kernel ($KERNEL_TREE), profile "$PROF" with compiler $compiler..."
 cd $KERNEL_TREE
 if [ "$PROF" = linux ]; then
-	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
-	# Tweak the config a bit
-	$KERNELCFG_TWEAK_SCRIPT
+    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+    # Tweak the config a bit
+    $KERNELCFG_TWEAK_SCRIPT
+elif [ "$PROF" = debug ]; then
+    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+    # Tweak the config a bit
+    $KERNELCFG_TWEAK_SCRIPT
+elif [ "$PROF" = check ]; then
+    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+    # Tweak the config a bit
+    compiler=arm-linux-gnueabihf-
+    $KERNELCFG_TWEAK_SCRIPT
 elif [ "$PROF" = chrome ]; then
 	./chromeos/scripts/prepareconfig chromiumos-qualcomm $buildpath/.config
 else
 	echo "Invalid profile, using defconfig"
 	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
-	# Tweak the config a bit
-	#$KERNELCFG_TWEAK_SCRIPT
 fi
 
 ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
-ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
-#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR dtbs_check
+
+if [ "$PROF" = check ]; then
+	#echo "Compiler build checks"
+	#sleep 2	
+	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make W=1 O=$buildpath -j$J_FACTOR
+	#echo "Coccinelle checks"
+	#sleep 2	
+	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make W=1 O=$buildpath -j$J_FACTOR coccicheck
+	echo "Sparse checks"
+	sleep 2	
+	ARCH=$arch CROSS_COMPILE="ccache $compiler" make C=1 O=$buildpath -j$J_FACTOR
+	#echo "DTBS check"
+	#sleep 2	
+	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make C=1 W=1 O=$buildpath -j$J_FACTOR dtbs_check
+else
+	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
+fi
+
+echo "Building modules..."
+sleep 2	
 ARCH=$arch CROSS_COMPILE="$compiler" make -s O=$buildpath modules_install \
     INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
+echo "Building perf..."
+sleep 2	
 ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install \
     DESTDIR=$UTIL_FS
 	#EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
