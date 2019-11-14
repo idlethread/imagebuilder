@@ -14,7 +14,7 @@ BRENDAN_PERF_TOOLS_TREE=~/work/sources/tools-perf-brendan-greg.git
 BUILDROOT_TREE=~/work/sources/buildroot
 BUILDROOT_TAG=2019.08.1
 #BUILDROOT_TAG="origin/master"
-KERNELCFG_TWEAK_SCRIPT=~/bin/linux-minimize-defconfig.sh
+KERNELCFG_TWEAK_SCRIPT=~/.local/bin/linux-minimize-defconfig.sh
 
 # Top-level directory for various build object files
 BUILD_ROOTDIR=~/work/builds

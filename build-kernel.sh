@@ -3,7 +3,7 @@
 # script to build kernel for appropriate board and boot it
 # based on a script from Niklas Cassel
 
-. ~/bin/build-env.sh
+. build-env.sh
 
 if [ "$1" ]; then
     board=$1

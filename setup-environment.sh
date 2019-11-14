@@ -3,7 +3,7 @@
 # Download sources that are not present on the system and create
 # directories to allow rest of the script to do their thing
 
-. ~/bin/build-env.sh
+. build-env.sh
 
 [ -d $CDBA_TREE ] || git clone https://github.com/andersson/cdba $CDBA_TREE
 

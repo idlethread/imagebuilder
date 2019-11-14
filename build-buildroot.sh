@@ -3,7 +3,7 @@
 # script to create a minimal rootfs using buildroot and tweaking it to our liking
 # based on a script from Niklas
 
-. ~/bin/build-env.sh
+. build-env.sh
 
 cd $BUILDROOT_TREE
 git fetch

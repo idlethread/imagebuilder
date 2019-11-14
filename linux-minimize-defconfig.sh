@@ -3,7 +3,7 @@
 # Script to take defconfig and then remove some stuff for QC platforms to
 # speed up recompiles
 
-. ~/bin/build-env.sh
+. build-env.sh
 
 # Enable some trace/debug infrastructure
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FTRACE

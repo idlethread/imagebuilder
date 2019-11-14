@@ -2,7 +2,7 @@
 
 # script to build some common utils we want that aren't packaged in buildroot
 
-. ~/bin/build-env.sh
+. build-env.sh
 
 # FIXME: centralise the arch and compiler settings for all the scripts
 compiler="aarch64-linux-gnu-"
