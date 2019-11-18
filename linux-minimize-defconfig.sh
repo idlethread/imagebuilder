@@ -3,105 +3,152 @@
 # Script to take defconfig and then remove some stuff for QC platforms to
 # speed up recompiles
 
+# Manipulate options in a .config file from the command line.
+# Usage:
+# $myname options command ...
+# commands:
+#   --enable|-e option   Enable option
+#   --disable|-d option  Disable option
+#   --module|-m option   Turn option into a module
+#   --set-str option string
+#                        Set option to "string"
+#   --set-val option value
+#                        Set option to value
+#   --undefine|-u option Undefine option
+#   --state|-s option    Print state of option (n,y,m,undef)
+
+#   --enable-after|-E beforeopt option
+#                              Enable option directly after other option
+#   --disable-after|-D beforeopt option
+#                              Disable option directly after other option
+#   --module-after|-M beforeopt option
+#                              Turn option into module directly after other option
+
+#   commands can be repeated multiple times
+
+# options:
+#   --file config-file   .config file to change (default .config)
+#   --keep-case|-k       Keep next symbols' case (dont' upper-case it)
+
+# $myname doesn't check the validity of the .config file. This is done at next
+# make time.
+
+# By default, $myname will upper-case the given symbol. Use --keep-case to keep
+# the case of all following symbols unchanged.
+
+# $myname uses 'CONFIG_' as the default symbol prefix. Set the environment
+# variable CONFIG_ to the prefix to use. Eg.: CONFIG_="FOO_" $myname ...
+
+
 . build-env.sh
 
 # Enable some trace/debug infrastructure
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FTRACE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FUNCTION_TRACER
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable LATENCYTOP
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable SCHEDSTATS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable FUNCTION_PROFILER
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --enable FTRACE \
+			    --enable FUNCTION_TRACER \
+			    --enable LATENCYTOP \
+			    --enable SCHEDSTATS \
+			    --enable FUNCTION_PROFILER
 
-# Enable PM features I want
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable WQ_POWER_EFFICIENT_DEFAULT
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM64_CPUIDLE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable CPU_FREQ_DT
+# Enable PM/thermal features I want
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --enable WQ_POWER_EFFICIENT_DEFAULT \
+			    --enable ARM64_CPUIDLE \
+			    --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND \
+			    --enable THERMAL_STATISTICS \
+			    --enable CPU_FREQ_DT
 
 # Disable PM features I don't want
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable CPU_IDLE_GOV_LADDER
+#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#			     --disable CPU_IDLE_GOV_LADDER
 
 # Enable Qcom features I want
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_LMH
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --module QCOM_SPMI_TEMP_ALARM
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --module QCOM_TSENS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_HW
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ARM_QCOM_CPUFREQ_KRYO
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_SPMI_ADC5
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_SNOC
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ATH10K_DEBUG
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ATH10K_DEBUGFS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCS_GCC_404
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable PINCTRL_QCS404
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable THERMAL_STATISTICS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable QCOM_QMI_COOLING_DEVICE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable SAMPLE_QMI_CLIENT
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --module QCOM_SPMI_TEMP_ALARM \
+			    --enable QCOM_TSENS \
+			    --enable ARM_QCOM_CPUFREQ_HW \
+			    --enable ARM_QCOM_CPUFREQ_KRYO \
+			    --enable QCOM_SPMI_ADC5 \
+			    --enable ATH10K_SNOC \
+			    --disable ATH10K_DEBUG \
+			    --enable ATH10K_DEBUGFS \
+			    --enable QCS_GCC_404 \
+			    --enable PINCTRL_QCS404 \
+			    --enable QCOM_QMI_COOLING_DEVICE \
+			    --enable SAMPLE_QMI_CLIENT \
+			    --enable QCOM_LMH \
+			    --enable REMOTEPROC
 
 # Disable drivers I don't need
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable DRM_NOUVEAU
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable NET_VENDOR_HISILICON
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable XEN
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --disable DRM_NOUVEAU \
+			    --disable NET_VENDOR_HISILICON \
+			    --disable XEN
 
 # Disable sub-arches I don't care about
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ACTIONS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SUNXI
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ALPINE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_AGILEX
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BCM2835
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BCM_IPROC
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BERLIN
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_BRCMSTB
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_EXYNOS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_K3
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_LAYERSCAPE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_LG1K
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_HISI
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MEDIATEK
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MESON
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MVEBU
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MXC
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_REALTEK
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ROCKCHIP
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SEATTLE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SYNQUACER
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_RENESAS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_STRATIX10
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_TEGRA
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_SPRD
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_THUNDER
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_THUNDER2
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_UNIPHIER
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_VEXPRESS
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_XGENE
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ZX
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_ZYNQMP
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --disable ARCH_ACTIONS \
+			    --disable ARCH_SUNXI \
+			    --disable ARCH_ALPINE \
+			    --disable ARCH_AGILEX \
+			    --disable ARCH_BCM2835 \
+			    --disable ARCH_BCM_IPROC \
+			    --disable ARCH_BERLIN \
+			    --disable ARCH_BRCMSTB \
+			    --disable ARCH_EXYNOS \
+			    --disable ARCH_K3 \
+			    --disable ARCH_LAYERSCAPE \
+			    --disable ARCH_LG1K \
+			    --disable ARCH_HISI \
+			    --disable ARCH_MEDIATEK \
+			    --disable ARCH_MESON \
+			    --disable ARCH_MVEBU \
+			    --disable ARCH_MXC \
+			    --disable ARCH_REALTEK \
+			    --disable ARCH_ROCKCHIP \
+			    --disable ARCH_SEATTLE \
+			    --disable ARCH_SYNQUACER \
+			    --disable ARCH_RENESAS \
+			    --disable ARCH_STRATIX10 \
+			    --disable ARCH_TEGRA \
+			    --disable ARCH_SPRD \
+			    --disable ARCH_THUNDER \
+			    --disable ARCH_THUNDER2 \
+			    --disable ARCH_UNIPHIER \
+			    --disable ARCH_VEXPRESS \
+			    --disable ARCH_XGENE \
+			    --disable ARCH_ZX \
+			    --disable ARCH_ZYNQMP
 
 # Downstream msm-3.18 kernel stuff to disable
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable ARCH_MSMCOBALT
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --disable ARCH_MSMCOBALT
 
 # Enable misc features
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable NFS_FS
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable ROOT_NFS
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable NFS_V2
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable NFS_V3
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --enable NFS_V4
+#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#			    --enable NFS_FS \
+#			    --enable ROOT_NFS \
+#			    --enable NFS_V2 \
+#			    --enable NFS_V3 \
+#			    --enable NFS_V4
 
 # Disable misc features
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config --disable IPV6
-
-#sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --disable IPV6
 
 # Enable debug features
-#CONFIG_DEBUG_SECTION_MISMATCH
-#KASAN
-#CONFIG_DEBUG_KMEMLEAK
-#CONFIG_LOCK_STAT
-#CONFIG_EVENT_TRACING
-#CONFIG_DEBUG_SPINLOCK
-#CONFIG_DEBUG_MUTEXES
-#CONFIG_DEBUG_RWSEMS
-#CONFIG_DEBUG_LOCK_ALLOC
-#CONFIG_DEBUG_ATOMIC_SLEEP
+$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+			    --enable CONFIG_DEBUG_SECTION_MISMATCH \
+			    --enable KASAN \
+			    --enable CONFIG_DEBUG_KMEMLEAK \
+			    --enable CONFIG_LOCK_STAT \
+			    --enable CONFIG_EVENT_TRACING \
+			    --enable CONFIG_DEBUG_SPINLOCK \
+			    --enable CONFIG_DEBUG_MUTEXES \
+			    --enable CONFIG_DEBUG_RWSEMS \
+			    --enable CONFIG_DEBUG_LOCK_ALLOC \
+			    --enable CONFIG_DEBUG_ATOMIC_SLEEP \
+			    --enable CONFIG_FTRACE_SYSCALLS \
+			    --enable CONFIG_DEBUG_ALIGN_RODATA
 
-#CONFIG_FTRACE_SYSCALLS
-#CONFIG_DEBUG_ALIGN_RODATA
+#sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config

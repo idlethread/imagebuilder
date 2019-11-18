@@ -5,16 +5,19 @@
 
 . build-env.sh
 
-if [ "$1" ]; then
-    board=$1
-else
-    echo "usage: $0 <board> [<profile>] [<kernel-cmd-line>]"
-    echo "usage: $0 db410c linux"
-    echo "usage: kerndir="." $0 db410c linux "initcall_debug""
-    exit
-fi
+usage () {
+	echo "Usage:"
+	echo "\t$0 <board> [<profile>] [<kernel-cmd-line>]"
+	echo "\tvalid boards are: db410c|db600c|db820c|db845c|sdm845-mtp|sdm835-mtp|qcs404-evb-4k|qcs404-mistral|generic"
+	echo "\tvalid profiles are: mainline|minimal|chrome|debug|check"
+	echo ""
+	echo "\tkerndir="." $0 db410c minimal "initcall_debug""
+	exit
+}
 
-[ "$2" ] && PROF="$2"
+[ "$1" ] && board="$1" || usage
+
+PROF=${2:-"minimal"}
 
 [ "$3" ] && KERN_CMDLINE_EXT="$3"
 
@@ -92,6 +95,12 @@ elif [ "$board" = qcs404-mistral ]; then
     id=evb405-4k-1
     cdbahost="qc.lab"
     conf="chromeos/config/base.config chromeos/config/arm64/common.config chromeos/config/arm64/chromiumos-qualcomm.flavour.config"
+elif [ "$board" = generic-arm64 ]; then
+    arch=arm64
+    conf=defconfig
+elif [ "$board" = generic-x86 ]; then
+    arch=x86_64
+    conf=defconfig
 else
     echo unsupported board
     exit
@@ -114,12 +123,8 @@ KERN_CMDLINE=${board_kernel_cmdline:-$DEFAULT_KERNEL_CMDLINE}
 # Any more options on in the KERNEL_CMDLINE_EXT env variable?
 KERN_CMDLINE="$KERN_CMDLINE $KERN_CMDLINE_EXT"
 
+
 if [ "$PROF" = check ]; then
-    if [ "$arch" = arm64 ]; then
-        compiler=aarch64-linux-gnu-
-    elif [ "$arch" = arm ]; then
-        compiler=arm-linux-gnueabihf-
-    fi
     buildpath="$BUILD_ROOTDIR/build-check"
     modpath="$BUILD_ROOTDIR/mod-check"
     zImage="$buildpath/arch/arm64/boot/Image.gz"
@@ -140,6 +145,11 @@ else
         buildpath="$BUILD_ROOTDIR/build-arm"
         modpath="$BUILD_ROOTDIR/mod-arm"
         zImage="$buildpath/arch/arm/boot/zImage"
+    elif [ "$arch" = x86_64 ]; then
+        compiler=
+        buildpath="$BUILD_ROOTDIR/build-x86"
+        modpath="$BUILD_ROOTDIR/mod-x86"
+        zImage="$buildpath/arch/arm/boot/bzImage"
     else
         echo "unsupported arch"
         exit
@@ -161,66 +171,73 @@ rm -f $buildpath/arch/*/boot/dts/*/*.dtb    # delete .dtb to avoid picking up st
 
 #KERNELRELEASE=`make kernelversion`-amit
 
+buildcmd () {
+	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $@
+}
+
 KERNEL_TREE=${kerndir:-`pwd`}
-echo "Building $arch kernel ($KERNEL_TREE), profile "$PROF" with compiler $compiler..."
 cd $KERNEL_TREE
-if [ "$PROF" = linux ]; then
-    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
-    # Tweak the config a bit
-    $KERNELCFG_TWEAK_SCRIPT
+if   [ "$PROF" = minimal ]; then
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+elif [ "$PROF" = mainline ]; then
+	buildcmd $conf
 elif [ "$PROF" = debug ]; then
-    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
-    # Tweak the config a bit
-    $KERNELCFG_TWEAK_SCRIPT
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 elif [ "$PROF" = check ]; then
-    ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
-    # Tweak the config a bit
-    compiler=arm-linux-gnueabihf-
-    $KERNELCFG_TWEAK_SCRIPT
+	build_check=true;
 elif [ "$PROF" = chrome ]; then
 	./chromeos/scripts/prepareconfig chromiumos-qualcomm $buildpath/.config
 else
-	echo "Invalid profile, using defconfig"
-	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $conf
+	echo "Invalid profile, using minimal"
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 fi
 
-ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR olddefconfig
+echo "Building $arch kernel ($KERNEL_TREE), profile "$PROF" with compiler $compiler..."
+buildcmd olddefconfig
 
 if [ "$PROF" = check ]; then
-	#echo "Compiler build checks"
-	#sleep 2	
-	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make W=1 O=$buildpath -j$J_FACTOR
+	# Only run some local build tests, no need to create boot artifacts
+	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
+	compiler=aarch64-linux-gnu-
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+
+	echo "Compiler build checks"
+	sleep 2
+	buildcmd W=1
 	#echo "Coccinelle checks"
-	#sleep 2	
-	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make W=1 O=$buildpath -j$J_FACTOR coccicheck
+	#sleep 2
+	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR W=1 coccicheck
 	echo "Sparse checks"
-	sleep 2	
-	ARCH=$arch CROSS_COMPILE="ccache $compiler" make C=1 O=$buildpath -j$J_FACTOR
-	#echo "DTBS check"
-	#sleep 2	
-	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make C=1 W=1 O=$buildpath -j$J_FACTOR dtbs_check
+	sleep 2
+	buildcmd C=1
+	echo "DTBS check"
+	sleep 2
+	buildcmd dtbs_check
+	exit
 else
-	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
+	buildcmd
 fi
 
 echo "Building modules..."
-sleep 2	
-ARCH=$arch CROSS_COMPILE="$compiler" make -s O=$buildpath modules_install \
-    INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
+sleep 2
+buildcmd -s modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 echo "Building perf..."
-sleep 2	
-ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install \
-    DESTDIR=$UTIL_FS
-	#EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
-	#CFLAGS="--sysroot=$BUILDROOT_TREE/output/host/aarch64-buildroot-linux-gnu/sysroot -O2 -pipe -g -feliminate-unused-debug-types -fno-omit-frame-pointer -march=armv8-a -funwind-tables" \
-	#LDFLAGS="-L$BUILDROOT_TREE/output/target/usr/lib -L$BUILDROOT_TREE/output/target/usr/lib/elfutils $LDFLAGS" \
+sleep 2
+ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$UTIL_FS
+#EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
+    #CFLAGS="--sysroot=$BUILDROOT_TREE/output/host/aarch64-buildroot-linux-gnu/sysroot -O2 -pipe -g -feliminate-unused-debug-types -fno-omit-frame-pointer -march=armv8-a -funwind-tables" \
+    #LDFLAGS="-L$BUILDROOT_TREE/output/target/usr/lib -L$BUILDROOT_TREE/output/target/usr/lib/elfutils $LDFLAGS" \
 
 # Rebuild UTILS_CPIO to include perf updates
 (cd $UTIL_FS; find . | cpio -o -H newc | gzip -9 > $UTILS_CPIO)
 
 # Speed up ccache a bit by disabling build timestamp
 # http://nickdesaulniers.github.io/blog/2018/06/02/speeding-up-linux-kernel-builds-with-ccache/
-#KBUILD_BUILD_TIMESTAMP='' ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR
+#KBUILD_BUILD_TIMESTAMP='' buildcmd
 #KBUILD_BUILD_TIMESTAMP='' ARCH=$arch CROSS_COMPILE=$compiler make -s O=$buildpath modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 
 (cd $buildpath && \
