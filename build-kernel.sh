@@ -7,11 +7,15 @@
 
 usage () {
 	echo "Usage:"
-	echo "\t$0 <board> [<profile>] [<kernel-cmd-line>]"
-	echo "\tvalid boards are: db410c|db600c|db820c|db845c|sdm845-mtp|sdm835-mtp|qcs404-evb-4k|qcs404-mistral|generic"
-	echo "\tvalid profiles are: mainline|minimal|chrome|debug|check"
+	echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
+	echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
+	echo "\t\tvalid profiles are: mainline, minimal, chrome, debug, check"
 	echo ""
-	echo "\tkerndir="." $0 db410c minimal "initcall_debug""
+	echo "Examples:"
+	echo "\t$PNAME sdm845-mtp minimal"
+	echo "\t$PNAME db845c mainline"
+	echo "\t$PNAME db845c check"
+	echo "\tkerndir=\"/tmp/kernel.git\" $PNAME db410c minimal \"initcall_debug\""
 	exit
 }
 
@@ -191,11 +195,19 @@ elif [ "$PROF" = chrome ]; then
 	./chromeos/scripts/prepareconfig chromiumos-qualcomm $buildpath/.config
 else
 	echo "Invalid profile, using minimal"
+	PROF=minimal
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 fi
 
-echo "Building $arch kernel ($KERNEL_TREE), profile "$PROF" with compiler $compiler..."
+echo ""
+echo "Building..."
+echo "Kernel: $KERNEL_TREE"
+echo "Kernel cmdline: $KERN_CMDLINE"
+echo "Profile: $PROF"
+echo "Compiler: $compiler"
+echo ""
+
 buildcmd olddefconfig
 
 if [ "$PROF" = check ]; then
