@@ -5,6 +5,13 @@
 
 . build-env.sh
 
+# Generate log file name by concatenating all arguments
+old="$IFS"
+IFS='-'
+FNAME="$*"
+IFS=$old
+[ -z "$TYPESCRIPT" ] && TYPESCRIPT=1 exec /usr/bin/script -f "$BUILD_LOGS/$FNAME-$TSTAMP.log" -c "TYPESCRIPT=1  $0 $*"
+
 usage () {
 	echo "Usage:"
 	echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
@@ -217,16 +224,16 @@ if [ "$PROF" = check ]; then
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 
-	echo "Compiler build checks"
+	echo "Checks: Compiler builds (W=1)"
 	sleep 2
 	buildcmd W=1
-	#echo "Coccinelle checks"
+	#echo "Checks: Coccinelle (coccicheck)"
 	#sleep 2
 	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR W=1 coccicheck
-	echo "Sparse checks"
+	echo "Checks: Sparse (C=1)"
 	sleep 2
 	buildcmd C=1
-	echo "DTBS check"
+	echo "Checks: DTBS (dtbs_check)"
 	sleep 2
 	buildcmd dtbs_check
 	exit
@@ -291,5 +298,5 @@ echo ""
 echo "\t\tsudo fastboot boot $IMAGE_DIR/image-$board"
 echo ""
 echo "\tRemote:"
-scp $IMAGE_DIR/image-$board qc.lab:~
+echo "scp $IMAGE_DIR/image-$board qc.lab:~"
 echo "~/sandbox/cdba/cdba -b $id -h localhost image-$board"

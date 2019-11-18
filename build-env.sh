@@ -21,6 +21,7 @@ BUILD_ROOTDIR=~/work/builds
 # Directory containing the various artifacts: kernel, modules, scripts, etc.
 IMAGE_DIR=$BUILD_ROOTDIR/image
 UTIL_FS=$IMAGE_DIR/utils
+BUILD_LOGS=$BUILD_ROOTDIR/logs
 
 #
 # You shouldn't need to tweak anything below
@@ -31,4 +32,5 @@ MODULES_CPIO_PREFIX=$IMAGE_DIR/kernel-modules
 INITRAMFS_CPIO=$IMAGE_DIR/initramfs.cpio.gz
 UTILS_CPIO=$IMAGE_DIR/utils.cpio.gz
 J_FACTOR="$(($(nproc)-1))"  # leave some cpu for interactivity
+TSTAMP=$(date +'%Y-%m-%d-%H%M%S')
 PNAME=$(basename $0)
