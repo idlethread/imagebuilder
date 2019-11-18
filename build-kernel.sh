@@ -208,6 +208,7 @@ else
 fi
 
 echo ""
+echo "============================================="
 echo "Building..."
 echo "Kernel: $KERNEL_TREE"
 echo "Kernel cmdline: $KERN_CMDLINE"
@@ -224,15 +225,19 @@ if [ "$PROF" = check ]; then
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 
+	echo "============================================="
 	echo "Checks: Compiler builds (W=1)"
 	sleep 2
 	buildcmd W=1
+	#echo "============================================="
 	#echo "Checks: Coccinelle (coccicheck)"
 	#sleep 2
 	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR W=1 coccicheck
+	echo "============================================="
 	echo "Checks: Sparse (C=1)"
 	sleep 2
 	buildcmd C=1
+	echo "============================================="
 	echo "Checks: DTBS (dtbs_check)"
 	sleep 2
 	buildcmd dtbs_check
@@ -241,10 +246,12 @@ else
 	buildcmd
 fi
 
-echo "Building modules..."
+echo "============================================="
+echo "Building: modules..."
 sleep 2
 buildcmd -s modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
-echo "Building perf..."
+echo "============================================="
+echo "Building: perf..."
 sleep 2
 ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$UTIL_FS
 #EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
@@ -263,6 +270,7 @@ ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$
 	aarch64-linux-gnu-objcopy -O binary vmlinux vmlinux.bin && \
 	lzma -f vmlinux.bin)
 
+echo "============================================="
 echo "Copy kernel, dtb and modules to appropriate places..."
 cat $zImage $buildpath/$dtb > $IMAGE_DIR/zImage-$board
 (cd $modpath ; find . | cpio -o -H newc | gzip -9 > $MODULES_CPIO)
@@ -272,10 +280,10 @@ cat $zImage $buildpath/$dtb > $IMAGE_DIR/zImage-$board
 
 #cp $myprogs $IMAGE_DIR/
 
+echo "============================================="
 echo "Merge all the cpio archives together..."
 cat $ROOTFS_CPIO $ROOTFSTWEAKS_CPIO $MODULES_CPIO $UTILS_CPIO > $INITRAMFS_CPIO
 
-echo "Using cmdline: $KERN_CMDLINE"
 mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO \
 --output $IMAGE_DIR/image-$board --pagesize $pagesize --base 0x80000000 \
 --cmdline "$KERN_CMDLINE"
