@@ -16,7 +16,7 @@ usage () {
 	echo "Usage:"
 	echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
 	echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
-	echo "\t\tvalid profiles are: mainline, minimal, chrome, debug, check"
+	echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check"
 	echo ""
 	echo "Examples:"
 	echo "\t$PNAME sdm845-mtp minimal"
@@ -191,6 +191,9 @@ cd $KERNEL_TREE
 if   [ "$PROF" = minimal ]; then
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+elif [ "$PROF" = compile ]; then
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
 elif [ "$PROF" = mainline ]; then
 	buildcmd $conf
 elif [ "$PROF" = debug ]; then
@@ -257,6 +260,10 @@ ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$
 #EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
     #CFLAGS="--sysroot=$BUILDROOT_TREE/output/host/aarch64-buildroot-linux-gnu/sysroot -O2 -pipe -g -feliminate-unused-debug-types -fno-omit-frame-pointer -march=armv8-a -funwind-tables" \
     #LDFLAGS="-L$BUILDROOT_TREE/output/target/usr/lib -L$BUILDROOT_TREE/output/target/usr/lib/elfutils $LDFLAGS" \
+
+if [ "$PROF" = compile ]; then
+	exit
+fi
 
 # Rebuild UTILS_CPIO to include perf updates
 (cd $UTIL_FS; find . | cpio -o -H newc | gzip -9 > $UTILS_CPIO)
