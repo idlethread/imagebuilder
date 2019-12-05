@@ -137,18 +137,18 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --disable IPV6
 
 # Enable debug features
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
-			    --enable CONFIG_DEBUG_SECTION_MISMATCH \
-			    --enable KASAN \
-			    --enable CONFIG_DEBUG_KMEMLEAK \
-			    --enable CONFIG_LOCK_STAT \
-			    --enable CONFIG_EVENT_TRACING \
-			    --enable CONFIG_DEBUG_SPINLOCK \
-			    --enable CONFIG_DEBUG_MUTEXES \
-			    --enable CONFIG_DEBUG_RWSEMS \
-			    --enable CONFIG_DEBUG_LOCK_ALLOC \
-			    --enable CONFIG_DEBUG_ATOMIC_SLEEP \
-			    --enable CONFIG_FTRACE_SYSCALLS \
-			    --enable CONFIG_DEBUG_ALIGN_RODATA
+#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#			    --enable CONFIG_DEBUG_SECTION_MISMATCH \
+#			    --enable KASAN \
+#			    --enable CONFIG_DEBUG_KMEMLEAK \
+#			    --enable CONFIG_LOCK_STAT \
+#			    --enable CONFIG_EVENT_TRACING \
+#			    --enable CONFIG_DEBUG_SPINLOCK \
+#			    --enable CONFIG_DEBUG_MUTEXES \
+#			    --enable CONFIG_DEBUG_RWSEMS \
+#			    --enable CONFIG_DEBUG_LOCK_ALLOC \
+#			    --enable CONFIG_DEBUG_ATOMIC_SLEEP \
+#			    --enable CONFIG_FTRACE_SYSCALLS \
+#			    --enable CONFIG_DEBUG_ALIGN_RODATA
 
 #sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
