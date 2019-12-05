@@ -69,7 +69,9 @@ elif [ "$board" = db845c ]; then
     pagesize=4096
     dtb=arch/arm64/boot/dts/qcom/sdm845-db845c.dtb
     id=62eb9221
+    console=ttyMSM0
     cdbahost="localhost"
+    board_kernel_cmdline="root=/dev/foo earlycon console=tty0 console=${console},115200n8 ignore_loglevel"
     conf=defconfig
 elif [ "$board" = sdm845-mtp ]; then
     arch=arm64
@@ -256,7 +258,7 @@ buildcmd -s modules_install INSTALL_MOD_PATH=$modpath INSTALL_MOD_STRIP=1
 echo "============================================="
 echo "Building: perf..."
 sleep 2
-ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$UTIL_FS
+#ARCH=$arch CROSS_COMPILE="$compiler" make O=/tmp -C tools/perf install DESTDIR=$UTIL_FS
 #EXTRA_CFLAGS="$CFLAGS -I$BUILDROOT_TREE/output/target/include" \
     #CFLAGS="--sysroot=$BUILDROOT_TREE/output/host/aarch64-buildroot-linux-gnu/sysroot -O2 -pipe -g -feliminate-unused-debug-types -fno-omit-frame-pointer -march=armv8-a -funwind-tables" \
     #LDFLAGS="-L$BUILDROOT_TREE/output/target/usr/lib -L$BUILDROOT_TREE/output/target/usr/lib/elfutils $LDFLAGS" \
