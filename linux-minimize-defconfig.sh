@@ -77,7 +77,11 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --enable QCOM_QMI_COOLING_DEVICE \
 			    --enable SAMPLE_QMI_CLIENT \
 			    --enable QCOM_LMH \
-			    --enable REMOTEPROC
+			    --enable REMOTEPROC \
+			    --module INTERCONNECT \
+			    --enable INTERCONNECT_QCOM \
+			    --module INTERCONNECT_QCOM_QCS404 \
+			    --module INTERCONNECT_QCOM_SDM845 \
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
