@@ -82,6 +82,8 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --enable INTERCONNECT_QCOM \
 			    --module INTERCONNECT_QCOM_QCS404 \
 			    --module INTERCONNECT_QCOM_SDM845 \
+			    --module QCOM_GENI_SE \
+			    --module USB_DWC3_QCOM
 
 # Disable drivers I don't need
 $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
