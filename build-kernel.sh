@@ -37,8 +37,10 @@ if [ "$board" = db410c ]; then
     arch=arm64
     pagesize=2048
     dtb=arch/arm64/boot/dts/qcom/apq8016-sbc.dtb
-    id=1dcd2e70
+    id=6532528
     cdbahost=localhost
+    relay="3"
+    usbrelay="3"
     conf=defconfig
 elif [ "$board" = ifc6410 ]; then
     arch=arm
@@ -51,8 +53,10 @@ elif [ "$board" = db820c ]; then
     arch=arm64
     pagesize=4096
     dtb=arch/arm64/boot/dts/qcom/apq8096-db820c.dtb
-    id=dd4541f9
+    id=a11b49c8
     cdbahost=localhost
+    relay="2"
+    usbrelay="2"
     conf=defconfig
 elif [ "$board" = db820c-3.18 ]; then
     arch=arm64-old
@@ -71,6 +75,8 @@ elif [ "$board" = db845c ]; then
     id=62eb9221
     console=ttyMSM0
     cdbahost="localhost"
+    relay="1"
+    usbrelay="1"
     board_kernel_cmdline="root=/dev/foo earlycon console=tty0 console=${console},115200n8 ignore_loglevel"
     conf=defconfig
 elif [ "$board" = sdm845-mtp ]; then
@@ -297,6 +303,46 @@ mkbootimg --kernel $IMAGE_DIR/zImage-$board --ramdisk $INITRAMFS_CPIO \
 --output $IMAGE_DIR/image-$board --pagesize $pagesize --base 0x80000000 \
 --cmdline "$KERN_CMDLINE"
 
+usbrelaypoweron=DOA6
+usbrelaypoweroff=DOI6
+poweron=DOA${relay}
+poweroff=DOI${relay}
+powerrelaycmd="curl http://172.16.0.94/io.cgi?"
+usbpoweron="-u ${usbrelay}"
+usbpoweroff="-d ${usbrelay}"
+usbportalloff="-d a"
+usbrelaycmd="/home/amit/.local/bin/ykushcmd ykush3 -s YK3A1016 "
+echo $poweron, $poweroff, $powerrelaycmd, $usbpoweron, $usbpoweroff, $usbrelaycmd
+echo $PATH
+
+usbrelay_poweron () {
+        ${powerrelaycmd}${usbrelaypoweron}
+}
+
+usbrelay_poweroff () {
+        ${powerrelaycmd}${usbrelaypoweroff}
+}
+
+usbrelay_allportsoff () {
+        ${usbrelaycmd}${usbportalloff}
+}
+
+board_poweron () {
+        ${powerrelaycmd}${poweron}
+}
+
+board_poweroff () {
+        ${powerrelaycmd}${poweroff}
+}
+
+usbport_enable () {
+        ${usbrelaycmd}${usbpoweron}
+}
+
+usbport_disable () {
+        ${usbrelaycmd}${usbpoweroff}
+}
+
 # We use cdba to test a subset of boards and manual testing for the rest.
 # Print both commands for copy-paste ease
 #$CDBA_TREE/cdba -b $id -h $cdbahost $IMAGE_DIR/image-$board
@@ -317,3 +363,13 @@ echo ""
 echo "\tRemote:"
 echo "scp $IMAGE_DIR/image-$board qc.lab:~"
 echo "~/sandbox/cdba/cdba -b $id -h localhost image-$board"
+
+usbrelay_poweron
+usbrelay_allportsoff
+usbport_disable
+board_poweroff
+sleep 10
+board_poweron
+usbport_enable
+fastboot boot -s $id $IMAGE_DIR/image-$board
+#usbrelay_poweroff
