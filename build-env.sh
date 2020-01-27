@@ -4,7 +4,7 @@
 # This script should be sourced by others
 
 # Path to your kernel tree
-DEFAULT_KERNEL_TREE=~/work/sources/linux-amit.git
+DEFAULT_KERNEL_TREE=.
 KERNEL_TREE=${KERNEL_TREE:-$DEFAULT_KERNEL_TREE}
 # Path to various tools
 CDBA_TREE=~/work/sources/cdba.git

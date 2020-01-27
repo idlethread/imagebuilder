@@ -198,15 +198,15 @@ KERNEL_TREE=${kerndir:-`pwd`}
 cd $KERNEL_TREE
 if   [ "$PROF" = minimal ]; then
 	buildcmd $conf
-	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
 elif [ "$PROF" = compile ]; then
 	buildcmd $conf
-	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
 elif [ "$PROF" = mainline ]; then
 	buildcmd $conf
 elif [ "$PROF" = debug ]; then
 	buildcmd $conf
-	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
 elif [ "$PROF" = check ]; then
 	build_check=true;
 elif [ "$PROF" = chrome ]; then
@@ -215,7 +215,7 @@ else
 	echo "Invalid profile, using minimal"
 	PROF=minimal
 	buildcmd $conf
-	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT $buildpath  # Tweak the config a bit
 fi
 
 echo ""
@@ -234,7 +234,7 @@ if [ "$PROF" = check ]; then
 	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
 	compiler=aarch64-linux-gnu-
 	buildcmd $conf
-	$KERNELCFG_TWEAK_SCRIPT  # Tweak the config a bit
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
 
 	echo "============================================="
 	echo "Checks: Compiler builds (W=1)"

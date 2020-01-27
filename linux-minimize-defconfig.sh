@@ -39,11 +39,23 @@
 # $myname uses 'CONFIG_' as the default symbol prefix. Set the environment
 # variable CONFIG_ to the prefix to use. Eg.: CONFIG_="FOO_" $myname ...
 
-
 . build-env.sh
 
+usage () {
+	      echo "Usage:"
+	      echo "\t$PNAME <path to .config>"
+	      echo ""
+	      echo "Examples:"
+	      echo "\t$PNAME $HOME/work/build/build-aarch64/"
+	      exit
+}
+
+[ "$1" ] && buildpath="$1" || usage
+
+echo "Using kernel: $KERNEL_TREE"
+
 # Enable some trace/debug infrastructure
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --enable FTRACE \
 			    --enable FUNCTION_TRACER \
 			    --enable LATENCYTOP \
@@ -51,7 +63,7 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --enable FUNCTION_PROFILER
 
 # Enable PM/thermal features I want
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --enable WQ_POWER_EFFICIENT_DEFAULT \
 			    --enable ARM64_CPUIDLE \
 			    --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND \
@@ -59,11 +71,11 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --enable CPU_FREQ_DT
 
 # Disable PM features I don't want
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#$KERNEL_TREE/scripts/config --file $buildpath/.config \
 #			     --disable CPU_IDLE_GOV_LADDER
 
 # Enable Qcom features I want
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --module QCOM_SPMI_TEMP_ALARM \
 			    --enable QCOM_TSENS \
 			    --enable ARM_QCOM_CPUFREQ_HW \
@@ -78,21 +90,21 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --enable SAMPLE_QMI_CLIENT \
 			    --enable QCOM_LMH \
 			    --enable REMOTEPROC \
-			    --module INTERCONNECT \
-			    --enable INTERCONNECT_QCOM \
-			    --module INTERCONNECT_QCOM_QCS404 \
-			    --module INTERCONNECT_QCOM_SDM845 \
-			    --module QCOM_GENI_SE \
-			    --module USB_DWC3_QCOM
+#			    --module INTERCONNECT \
+#			    --enable INTERCONNECT_QCOM \
+#			    --module INTERCONNECT_QCOM_QCS404 \
+#			    --module INTERCONNECT_QCOM_SDM845 \
+#			    --module QCOM_GENI_SE \
+#			    --module USB_DWC3_QCOM
 
 # Disable drivers I don't need
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --disable DRM_NOUVEAU \
 			    --disable NET_VENDOR_HISILICON \
 			    --disable XEN
 
 # Disable sub-arches I don't care about
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --disable ARCH_ACTIONS \
 			    --disable ARCH_SUNXI \
 			    --disable ARCH_ALPINE \
@@ -127,11 +139,11 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 			    --disable ARCH_ZYNQMP
 
 # Downstream msm-3.18 kernel stuff to disable
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --disable ARCH_MSMCOBALT
 
 # Enable misc features
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#$KERNEL_TREE/scripts/config --file $buildpath/.config \
 #			    --enable NFS_FS \
 #			    --enable ROOT_NFS \
 #			    --enable NFS_V2 \
@@ -139,11 +151,11 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 #			    --enable NFS_V4
 
 # Disable misc features
-$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --disable IPV6
 
 # Enable debug features
-#$KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
+#$KERNEL_TREE/scripts/config --file $buildpath/.config \
 #			    --enable CONFIG_DEBUG_SECTION_MISMATCH \
 #			    --enable KASAN \
 #			    --enable CONFIG_DEBUG_KMEMLEAK \
@@ -157,4 +169,9 @@ $KERNEL_TREE/scripts/config --file $BUILD_ROOTDIR/build-aarch64/.config \
 #			    --enable CONFIG_FTRACE_SYSCALLS \
 #			    --enable CONFIG_DEBUG_ALIGN_RODATA
 
-#sed -i -e 's/=m/=n/' $BUILD_ROOTDIR/build-aarch64/.config
+#sed -i -e 's/=m/=n/' $buildpath/.config
+# Temperorary disable
+
+$KERNEL_TREE/scripts/config --file $buildpath/.config \
+			    --disable CPU_IDLE \
+			    --disable QCOM_TSENS
