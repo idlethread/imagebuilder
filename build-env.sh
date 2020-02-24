@@ -7,9 +7,9 @@
 DEFAULT_KERNEL_TREE=`pwd`
 KERNEL_TREE=${KERNEL_TREE:-$DEFAULT_KERNEL_TREE}
 # Path to various tools
-CDBA_TREE=~/work/sources/cdba.git
-BOOTRR_TREE=~/work/sources/bootrr.git
-QRTR_TREE=~/work/sources/qrtr.git
+CDBA_TREE=~/work/sources/qc/cdba.git
+BOOTRR_TREE=~/work/sources/qc/bootrr.git
+QRTR_TREE=~/work/sources/qc/qrtr.git
 BRENDAN_PERF_TOOLS_TREE=~/work/sources/tools-perf-brendan-greg.git
 BUILDROOT_TREE=~/work/sources/buildroot
 BUILDROOT_TAG=2019.11.1
