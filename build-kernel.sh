@@ -13,17 +13,17 @@ IFS=$old
 [ -z "$TYPESCRIPT" ] && TYPESCRIPT=1 exec /usr/bin/script -f "$BUILD_LOGS/$FNAME-$TSTAMP.log" -c "TYPESCRIPT=1  $0 $*"
 
 usage () {
-	echo "Usage:"
-	echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
-	echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
-	echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check"
-	echo ""
-	echo "Examples:"
-	echo "\t$PNAME sdm845-mtp minimal"
-	echo "\t$PNAME db845c mainline"
-	echo "\t$PNAME db845c check"
-	echo "\tkerndir=\"/tmp/kernel.git\" $PNAME db410c minimal \"initcall_debug\""
-	exit
+	      echo "Usage:"
+	      echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
+	      echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
+	      echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check"
+	      echo ""
+	      echo "Examples:"
+	      echo "\t$PNAME sdm845-mtp minimal"
+	      echo "\t$PNAME db845c mainline"
+	      echo "\t$PNAME db845c check"
+	      echo "\tkerndir=\"/tmp/kernel.git\" $PNAME db410c minimal \"initcall_debug\""
+	      exit
 }
 
 [ "$1" ] && board="$1" || usage
@@ -229,8 +229,6 @@ echo "Profile: $PROF"
 echo "Compiler: $compiler"
 echo ""
 
-buildcmd olddefconfig
-
 if [ "$PROF" = check ]; then
 	# Only run some local build tests, no need to create boot artifacts
 	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
@@ -256,6 +254,7 @@ if [ "$PROF" = check ]; then
 	buildcmd dtbs_check
 	exit
 else
+	buildcmd olddefconfig
 	buildcmd
 fi
 
@@ -367,11 +366,12 @@ echo "scp $IMAGE_DIR/image-$board qc.lab:~"
 echo "~/sandbox/cdba/cdba -b $id -h localhost image-$board"
 
 usbrelay_poweron
-usbrelay_allportsoff
+#usbrelay_allportsoff
 usbport_disable
 board_poweroff
 sleep 10
 board_poweron
+sleep 10
 usbport_enable
 fastboot boot -s $id $IMAGE_DIR/image-$board
 #usbrelay_poweroff
