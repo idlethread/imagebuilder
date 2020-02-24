@@ -50,6 +50,7 @@ alias stress404="stress-ng --matrix 2 --matrix-size 64 --tz -t 600 --taskset 0,3
 # id 1, 7
 alias stress845="stress-ng --matrix 2 --matrix-size 64 --tz -t 600 --taskset 0,4 &"
 alias stress845-cpu7="stress-ng --matrix 1 --matrix-size 64 --tz -t 600 --taskset 7 &"
+alias booterr="dmesg | grep -iw -e err -e fail -e unable -e not -e failed"
 
 J_FACTOR="$(($(nproc)-1))"
 
@@ -57,32 +58,33 @@ J_FACTOR="$(($(nproc)-1))"
 
 function prirq () {
         echo "irq:"
-        grep thermal /proc/interrupts
+        grep -e thermal -e temp /proc/interrupts
 }
 
 function prthrottle() {
         echo "throttling: "
         find /sys/class/thermal/cooling_device* -maxdepth 0 | while read d; do
-                paste $d/cur_state $d/max_state;
+                paste -d "\t" $d/type $d/cur_state $d/max_state;
         done;
 }
 
 function prtz() {
         echo "temp: "
         find /sys/class/thermal/thermal_zone* -maxdepth 0 | while read d; do
-                paste $d/type $d/temp;
+                paste -d "\t" $d/type $d/temp;
         done;
 }
 
-function prmisctz() {
+function prtzmisc() {
         grep "" /sys/bus/iio/devices/iio:device0/in_temp_*
         cat /sys/class/ieee80211/phy1/device/hwmon/hwmon0/temp1_input
 }
 
 function prcpufreq() {
         echo "freq: "
+        echo "<cpus>      <curr freq>   <max freq>"
         find /sys/devices/system/cpu/cpufreq/policy* -maxdepth 0 -type d| while read d; do
-                paste $d/related_cpus $d/scaling_cur_freq $d/scaling_max_freq;
+                paste -d "\t" $d/related_cpus $d/scaling_cur_freq $d/scaling_max_freq;
         done;
 }
 
@@ -93,9 +95,9 @@ function pridle() {
 function prstats() {
         pid=$1
         while kill -0 $pid; do
-                pr_tz;
-                pr_throttle;
-                pr_cpufreq;
+                prtz;
+                prthrottle;
+                prcpufreq;
                 sleep 5;
         done
 }
@@ -105,7 +107,7 @@ function run_cpu_stressor() {
         stress-ng --cpu 0 --cpu-method $name -t 60;
 }
 
-function run_trace() {
+function run_thermal_trace() {
 	prirq
 	prtz
 	funccount -d 10 "thermal_zone_device_*"
