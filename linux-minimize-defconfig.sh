@@ -90,6 +90,7 @@ $KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --enable SAMPLE_QMI_CLIENT \
 			    --enable QCOM_LMH \
 			    --enable REMOTEPROC \
+#			    --disable HAVE_SCHED_THERMAL_PRESSURE \
 #			    --module INTERCONNECT \
 #			    --enable INTERCONNECT_QCOM \
 #			    --module INTERCONNECT_QCOM_QCS404 \
@@ -171,7 +172,6 @@ $KERNEL_TREE/scripts/config --file $buildpath/.config \
 
 #sed -i -e 's/=m/=n/' $buildpath/.config
 # Temperorary disable
-
-$KERNEL_TREE/scripts/config --file $buildpath/.config \
-			    --disable CPU_IDLE \
-			    --disable QCOM_TSENS
+#$KERNEL_TREE/scripts/config --file $buildpath/.config \
+#			    --disable CPU_IDLE \
+#			    --disable QCOM_TSENS
