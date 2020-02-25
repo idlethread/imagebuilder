@@ -16,7 +16,7 @@ usage () {
 	      echo "Usage:"
 	      echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
 	      echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
-	      echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check"
+	      echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check, qcom-only-check"
 	      echo ""
 	      echo "Examples:"
 	      echo "\t$PNAME sdm845-mtp minimal"
@@ -209,6 +209,8 @@ elif [ "$PROF" = mainline ]; then
 elif [ "$PROF" = debug ]; then
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
+elif [ "$PROF" = qcom-only-check ]; then
+	build_check=true;
 elif [ "$PROF" = check ]; then
 	build_check=true;
 elif [ "$PROF" = chrome ]; then
@@ -229,7 +231,7 @@ echo "Profile: $PROF"
 echo "Compiler: $compiler"
 echo ""
 
-if [ "$PROF" = check ]; then
+if [ "$PROF" = qcom-only-check ]; then
 	# Only run some local build tests, no need to create boot artifacts
 	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
 	compiler=aarch64-linux-gnu-
@@ -248,6 +250,29 @@ if [ "$PROF" = check ]; then
 	echo "Checks: Sparse (C=1)"
 	sleep 2
 	buildcmd C=1
+	echo "============================================="
+	echo "Checks: DTBS (dtbs_check)"
+	sleep 2
+	buildcmd dtbs_check
+	exit
+elif [ "$PROF" = check ]; then
+	# Only run some local build tests, no need to create boot artifacts
+	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
+	compiler=aarch64-linux-gnu-
+	buildcmd $conf
+
+	echo "============================================="
+	echo "Checks: Compiler builds (W=1)"
+	sleep 2
+	#buildcmd W=1
+	#echo "============================================="
+	#echo "Checks: Coccinelle (coccicheck)"
+	#sleep 2
+	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR W=1 coccicheck
+	echo "============================================="
+	echo "Checks: Sparse (C=1)"
+	sleep 2
+	#buildcmd C=1
 	echo "============================================="
 	echo "Checks: DTBS (dtbs_check)"
 	sleep 2
