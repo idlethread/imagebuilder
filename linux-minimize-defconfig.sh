@@ -77,6 +77,7 @@ $KERNEL_TREE/scripts/config --file $buildpath/.config \
 # Enable Qcom features I want
 $KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --module QCOM_SPMI_TEMP_ALARM \
+			    --enable QCOM_QFPROM \
 			    --enable QCOM_TSENS \
 			    --enable ARM_QCOM_CPUFREQ_HW \
 			    --enable ARM_QCOM_CPUFREQ_KRYO \
