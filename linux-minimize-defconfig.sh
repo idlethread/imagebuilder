@@ -52,7 +52,7 @@ usage () {
 
 [ "$1" ] && buildpath="$1" || usage
 
-echo "Using kernel: $KERNEL_TREE"
+echo "Tweaking configs of kernel: $KERNEL_TREE"
 
 # Enable some trace/debug infrastructure
 $KERNEL_TREE/scripts/config --file $buildpath/.config \

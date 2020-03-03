@@ -22,7 +22,7 @@ usage () {
 	      echo "\t$PNAME sdm845-mtp minimal"
 	      echo "\t$PNAME db845c mainline"
 	      echo "\t$PNAME db845c check"
-	      echo "\tkerndir=\"/tmp/kernel.git\" $PNAME db410c minimal \"initcall_debug\""
+	      echo "\tKERNEL_TREE=\"/tmp/kernel.git\" $PNAME db410c minimal \"initcall_debug\""
 	      exit
 }
 
@@ -196,7 +196,6 @@ buildcmd () {
 	ARCH=$arch CROSS_COMPILE="ccache $compiler" make -k O=$buildpath -j$J_FACTOR $@
 }
 
-KERNEL_TREE=${kerndir:-`pwd`}
 cd $KERNEL_TREE
 if   [ "$PROF" = minimal ]; then
 	buildcmd $conf
