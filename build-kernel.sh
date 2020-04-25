@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 # script to build kernel for appropriate board and boot it
 # based on a script from Niklas Cassel
@@ -31,6 +31,15 @@ usage () {
 PROF=${2:-"minimal"}
 
 [ "$3" ] && KERN_CMDLINE_EXT="$3"
+
+fping $CONSOLE_SERVER
+ret=$?
+echo $ret
+if [ $ret -ne 0 ]; then
+        read -p "Console server $CONSOLE_SERVER is down, Continue? (y/n)" REPLY
+        [ "$REPLY" = "y" ] || exit
+fi
+
 
 # In POSIX shell, = is used instead of ==
 if [ "$board" = db410c ]; then
@@ -332,19 +341,20 @@ usbrelaypoweron=DOA6
 usbrelaypoweroff=DOI6
 poweron=DOA${relay}
 poweroff=DOI${relay}
-powerrelaycmd="curl http://172.16.0.94/io.cgi?"
-usbpoweron="-u ${usbrelay}"
-usbpoweroff="-d ${usbrelay}"
+powerrelaycmd="curl http://${CONSOLE_SERVER}/io.cgi?"
+usbpoweron="ykushcmd ykush3 -s YK3A1016 -u ${usbrelay}"
+usbpoweroff="ykushcmd ykush3 -s YK3A1016 -d ${usbrelay}"
 usbportalloff="-d a"
-usbrelaycmd="/home/amit/.local/bin/ykushcmd ykush3 -s YK3A1016 "
-echo $poweron, $poweroff, $powerrelaycmd, $usbpoweron, $usbpoweroff, $usbrelaycmd
-echo $PATH
+usbrelaycmd=ssh
+CMD_OPTS="172.16.0.136"
 
 usbrelay_poweron () {
+        echo "usb relay (ON): ${powerrelaycmd}${usbrelaypoweron}"
         ${powerrelaycmd}${usbrelaypoweron}
 }
 
 usbrelay_poweroff () {
+        echo "usb relay (OFF): ${powerrelaycmd}${usbrelaypoweroff}"
         ${powerrelaycmd}${usbrelaypoweroff}
 }
 
@@ -353,19 +363,23 @@ usbrelay_allportsoff () {
 }
 
 board_poweron () {
+        echo "board power (ON): ${powerrelaycmd}${poweron}"
         ${powerrelaycmd}${poweron}
 }
 
 board_poweroff () {
+        echo "board power (OFF): ${powerrelaycmd}${poweroff}"
         ${powerrelaycmd}${poweroff}
 }
 
 usbport_enable () {
-        ${usbrelaycmd}${usbpoweron}
+        echo "usb port (ON):"
+        ${usbrelaycmd} ${CMD_OPTS} "$usbpoweron"
 }
 
 usbport_disable () {
-        ${usbrelaycmd}${usbpoweroff}
+        echo "usb port (OFF):"
+        ${usbrelaycmd} ${CMD_OPTS} "$usbpoweroff"
 }
 
 # We use cdba to test a subset of boards and manual testing for the rest.
@@ -393,9 +407,10 @@ usbrelay_poweron
 #usbrelay_allportsoff
 usbport_disable
 board_poweroff
-sleep 10
+sleep 5
 board_poweron
 sleep 10
 usbport_enable
-fastboot boot -s $id $IMAGE_DIR/image-$board
+#fastboot boot -s $id $IMAGE_DIR/image-$board
+$usbrelaycmd $CMD_OPTS "fastboot boot -s $id ${IMAGE_DIR}/image-${board}"
 #usbrelay_poweroff
