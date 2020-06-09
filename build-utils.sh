@@ -34,6 +34,9 @@ printf "%s" \
 PS1="--o \h o--(\w) \$ "
 PATH=$PATH:/root/tools-perf-brendan-greg.git/bin
 
+# Shell configs
+shopt -s checkwinsize
+
 # Aliases
 alias la="ls -a"
 alias ll="ls -lh"
@@ -90,6 +93,11 @@ function prcpufreq() {
 
 function pridle() {
          grep "" /sys/devices/system/cpu/cpu?/cpuidle/*/*
+}
+
+function prpcap() {
+         echo "powercap: "
+         grep "" /sys/devices/virtual/powercap/energy_model/energy_model\:0/*/*/*constraint*uw
 }
 
 function prstats() {
