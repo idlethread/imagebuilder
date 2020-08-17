@@ -24,7 +24,7 @@ UTIL_FS=$IMAGE_DIR/utils
 BUILD_LOGS=$BUILD_ROOTDIR/logs
 
 # Machine controlling power and usb relays and running console server software
-CONSOLE_SERVER=172.16.0.94
+CONSOLE_SERVER=172.16.0.95
 
 #
 # You shouldn't need to tweak anything below
