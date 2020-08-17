@@ -10,6 +10,7 @@ KERNEL_TREE=${KERNEL_TREE:-$DEFAULT_KERNEL_TREE}
 CDBA_TREE=~/work/sources/qc/cdba.git
 BOOTRR_TREE=~/work/sources/qc/bootrr.git
 QRTR_TREE=~/work/sources/qc/qrtr.git
+POWERCAP_UTILS_TREE=~/work/sources/thermal/tools-powercap.git
 BRENDAN_PERF_TOOLS_TREE=~/work/sources/tools-perf-brendan-greg.git
 BUILDROOT_TREE=~/work/sources/buildroot
 BUILDROOT_TAG=2020.02.1
