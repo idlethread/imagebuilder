@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # script to build kernel for appropriate board and boot it
 # based on a script from Niklas Cassel
@@ -15,8 +15,8 @@ IFS=$old
 usage () {
 	      echo "Usage:"
 	      echo "\t$PNAME <board> [<profile>] [<kernel-cmd-line>]"
-	      echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
-	      echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check, qcom-only-check"
+	      echo "\t\tvalid boards are: db410c, db600c, db820c, db845c, sdm845-mtp, sm8150-mtp, sm8250-mtp, sdm835-mtp, qcs404-evb-4k, qcs404-mistral, generic"
+	      echo "\t\tvalid profiles are: mainline, minimal, compile, chrome, debug, check, qcom-only-warnings qcom-only-dt qcom-only-sparse"
 	      echo ""
 	      echo "Examples:"
 	      echo "\t$PNAME sdm845-mtp minimal"
@@ -32,9 +32,9 @@ PROF=${2:-"minimal"}
 
 [ "$3" ] && KERN_CMDLINE_EXT="$3"
 
-fping $CONSOLE_SERVER
+echo "We will stop here if the console server is not responsive"
+$(fping -q $CONSOLE_SERVER)
 ret=$?
-echo $ret
 if [ $ret -ne 0 ]; then
         read -p "Console server $CONSOLE_SERVER is down, Continue? (y/n)" REPLY
         [ "$REPLY" = "y" ] || exit
@@ -48,8 +48,8 @@ if [ "$board" = db410c ]; then
     dtb=arch/arm64/boot/dts/qcom/apq8016-sbc.dtb
     id=6532528
     cdbahost=localhost
-    relay="3"
-    usbrelay="3"
+    relay="2"
+    usbrelay="2"
     conf=defconfig
 elif [ "$board" = ifc6410 ]; then
     arch=arm
@@ -58,7 +58,7 @@ elif [ "$board" = ifc6410 ]; then
     id=e080c212
     cdbahost=localhost
     relay="7"
-    usbrelay="0"
+    usbrelay="3"
     conf=multi_v7_defconfig
 elif [ "$board" = db820c ]; then
     arch=arm64
@@ -66,8 +66,8 @@ elif [ "$board" = db820c ]; then
     dtb=arch/arm64/boot/dts/qcom/apq8096-db820c.dtb
     id=a11b49c8
     cdbahost=localhost
-    relay="2"
-    usbrelay="2"
+    relay="0"
+    usbrelay="0"
     conf=defconfig
 elif [ "$board" = db820c-3.18 ]; then
     arch=arm64-old
@@ -76,6 +76,8 @@ elif [ "$board" = db820c-3.18 ]; then
     id=dd4541f9
     console=ttyHSL0
     cdbahost=localhost
+    relay="0"
+    usbrelay="0"
     PATH=/home/amit/work/toolchains/gcc-linaro-4.9-2016.02-x86_64_aarch64-linux-gnu/bin:$PATH
     board_kernel_cmdline="earlyprintk=serial,${console},115200n8 console=${console},115200n8"
     conf=msm_defconfig
@@ -95,6 +97,20 @@ elif [ "$board" = sdm845-mtp ]; then
     pagesize=2048
     dtb=arch/arm64/boot/dts/qcom/sdm845-mtp.dtb
     id=sdm845-mtp-3
+    cdbahost="qc.lab"
+    conf=defconfig
+elif [ "$board" = sm8150-mtp ]; then
+    arch=arm64
+    pagesize=2048
+    dtb=arch/arm64/boot/dts/qcom/sm8150-mtp.dtb
+    id=sm8150-mtp-1
+    cdbahost="qc.lab"
+    conf=defconfig
+elif [ "$board" = sm8250-mtp ]; then
+    arch=arm64
+    pagesize=2048
+    dtb=arch/arm64/boot/dts/qcom/sm8250-mtp.dtb
+    id=sm8250-mtp-1
     cdbahost="qc.lab"
     conf=defconfig
 elif [ "$board" = sdm835-mtp ]; then
@@ -217,7 +233,11 @@ elif [ "$PROF" = mainline ]; then
 elif [ "$PROF" = debug ]; then
 	buildcmd $conf
 	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
-elif [ "$PROF" = qcom-only-check ]; then
+elif [ "$PROF" = qcom-only-warnings ]; then
+	build_check=true;
+elif [ "$PROF" = qcom-only-dt ]; then
+	build_check=true;
+elif [ "$PROF" = qcom-only-sparse ]; then
 	build_check=true;
 elif [ "$PROF" = check ]; then
 	build_check=true;
@@ -239,7 +259,7 @@ echo "Profile: $PROF"
 echo "Compiler: $compiler"
 echo ""
 
-if [ "$PROF" = qcom-only-check ]; then
+if [ "$PROF" = qcom-only-warnings ]; then
 	# Only run some local build tests, no need to create boot artifacts
 	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
 	compiler=aarch64-linux-gnu-
@@ -250,14 +270,30 @@ if [ "$PROF" = qcom-only-check ]; then
 	echo "Checks: Compiler builds (W=1)"
 	sleep 2
 	buildcmd W=1
+	exit
 	#echo "============================================="
 	#echo "Checks: Coccinelle (coccicheck)"
 	#sleep 2
 	#ARCH=$arch CROSS_COMPILE="ccache $compiler" make O=$buildpath -j$J_FACTOR W=1 coccicheck
+elif [ "$PROF" = qcom-only-sparse ]; then
+	# Only run some local build tests, no need to create boot artifacts
+	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
+	compiler=aarch64-linux-gnu-
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
+
 	echo "============================================="
 	echo "Checks: Sparse (C=1)"
 	sleep 2
 	buildcmd C=1
+	exit
+elif [ "$PROF" = qcom-only-dt ]; then
+	# Only run some local build tests, no need to create boot artifacts
+	# TODO: Loop through some arches for checks, hardcoded to aarch64 for now
+	compiler=aarch64-linux-gnu-
+	buildcmd $conf
+	$KERNELCFG_TWEAK_SCRIPT $buildpath # Tweak the config a bit
+
 	echo "============================================="
 	echo "Checks: DTBS (dtbs_check)"
 	sleep 2
@@ -346,7 +382,7 @@ usbpoweron="ykushcmd ykush3 -s YK3A1016 -u ${usbrelay}"
 usbpoweroff="ykushcmd ykush3 -s YK3A1016 -d ${usbrelay}"
 usbportalloff="-d a"
 usbrelaycmd=ssh
-CMD_OPTS="172.16.0.136"
+CMD_OPTS="172.16.0.136 -i ~/.ssh/mulberry"
 
 usbrelay_poweron () {
         echo "usb relay (ON): ${powerrelaycmd}${usbrelaypoweron}"
@@ -373,12 +409,12 @@ board_poweroff () {
 }
 
 usbport_enable () {
-        echo "usb port (ON):"
+        echo "usb port (ON): ${usbrelaycmd} ${CMD_OPTS} "$usbpoweron""
         ${usbrelaycmd} ${CMD_OPTS} "$usbpoweron"
 }
 
 usbport_disable () {
-        echo "usb port (OFF):"
+        echo "usb port (OFF): ${usbrelaycmd} ${CMD_OPTS} "$usbpoweroff""
         ${usbrelaycmd} ${CMD_OPTS} "$usbpoweroff"
 }
 
@@ -397,7 +433,7 @@ echo "\t\t$CDBA_TREE/cdba -b $id -h $cdbahost $IMAGE_DIR/image-$board"
 echo ""
 echo "\t\tOR"
 echo ""
-echo "\t\tsudo fastboot boot $IMAGE_DIR/image-$board"
+echo "\t\tsudo fastboot boot -s $id $IMAGE_DIR/image-$board"
 echo ""
 echo "\tRemote:"
 echo "scp $IMAGE_DIR/image-$board qc.lab:~"
@@ -405,6 +441,7 @@ echo "~/sandbox/cdba/cdba -b $id -h localhost image-$board"
 
 usbrelay_poweron
 #usbrelay_allportsoff
+sleep 5
 usbport_disable
 board_poweroff
 sleep 5
