@@ -12,7 +12,7 @@ BOOTRR_TREE=~/work/sources/qc/bootrr.git
 QRTR_TREE=~/work/sources/qc/qrtr.git
 BRENDAN_PERF_TOOLS_TREE=~/work/sources/tools-perf-brendan-greg.git
 BUILDROOT_TREE=~/work/sources/buildroot
-BUILDROOT_TAG=2019.11.1
+BUILDROOT_TAG=2020.02.1
 #BUILDROOT_TAG="origin/master"
 KERNELCFG_TWEAK_SCRIPT=~/.local/bin/linux-minimize-defconfig.sh
 

@@ -67,8 +67,12 @@ $KERNEL_TREE/scripts/config --file $buildpath/.config \
 			    --enable WQ_POWER_EFFICIENT_DEFAULT \
 			    --enable ARM64_CPUIDLE \
 			    --enable CPU_FREQ_DEFAULT_GOV_ONDEMAND \
-			    --enable THERMAL_STATISTICS \
-			    --enable CPU_FREQ_DT
+			    --enable POWERCAP \
+			    --enable IDLE_INJECT \
+			    --enable CPU_IDLE_THERMAL \
+			    --enable CPU_FREQ_DT \
+			    --enable THERMAL_NETLINK \
+			    --enable POWER_EM
 
 # Disable PM features I don't want
 #$KERNEL_TREE/scripts/config --file $buildpath/.config \
