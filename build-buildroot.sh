@@ -15,15 +15,16 @@ printf "%s" \
 CONFIG_FEATURE_TASKSET_FANCY=y
 ' > busybox.fragment
 
-printf "%s" \
-'/etc/init.d/S99qclt          f       755    0       0       -       -       -       -       -
-' > system/qclt_device_table.txt
+#printf "%s" \
+#'/etc/init.d/S99qclt          f       755    0       0       -       -       -       -       -
+#' > system/qclt_device_table.txt
 
 printf "%s" \
 'BR2_aarch64=y
 BR2_CCACHE=y
+BR2_ROOTFS_MERGED_USR=y
 BR2_SYSTEM_DEFAULT_PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/root/bin"
-BR2_ROOTFS_DEVICE_TABLE="system/device_table.txt system/qclt_device_table.txt"
+#BR2_ROOTFS_DEVICE_TABLE="system/device_table.txt system/qclt_device_table.txt"
 BR2_TOOLCHAIN_EXTERNAL=y
 #BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
 #BR2_TOOLCHAIN_EXTERNAL_PREINSTALLED=y
