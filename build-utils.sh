@@ -37,7 +37,9 @@ mkdir -p $prof
 
 printf "%s" \
        '# Prompt
-PS1="--o \h o--(\w) \$ "
+# PS1="--o \h o--(\w) \$ "
+PROMPT_DIRTRIM=2
+PS1='\n\e[92m\e[1m\h\e[0m \e[94m\w\n \e[92m\e[1m$\e[0m\e[0m\e[39m\e[49m '
 PATH=$PATH:/root/tools-perf-brendan-greg.git/bin
 
 # Shell configs
