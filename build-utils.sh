@@ -107,6 +107,10 @@ function pridle() {
 function prpcap() {
          echo "powercap: "
          grep "" /sys/devices/virtual/powercap/energy_model/energy_model\:0/*/*/*constraint*uw
+
+         find /sys/devices/virtual/powercap/energy_model/ -type d | grep -vw power | while read d; do
+              paste -d "\t" $d/name $d/constraint_?max_power_uw $d/constraint_?_power_limit_uw $d/constraint_?_time_window_us $d/constraint_?_name $d/power_uw
+         done;
 }
 
 function prstats() {
