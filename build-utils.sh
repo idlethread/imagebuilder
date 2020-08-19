@@ -24,7 +24,7 @@ rsync -avzhP $BRENDAN_PERF_TOOLS_TREE $UTIL_FS/root
 #chown -R root:root $UTIL_FS/root
 
 # Powercap-utils
-F=$(mktemp -d /tmp)
+F=$(mktemp -d)
 cd $F
 cmake -DCMAKE_TOOLCHAIN_FILE=$POWERCAP_UTILS_TREE/aarch64.cmake $POWERCAP_UTILS_TREE
 make DESTDIR=$UTIL_FS install
