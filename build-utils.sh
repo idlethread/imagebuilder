@@ -7,6 +7,7 @@
 # FIXME: centralise the arch and compiler settings for all the scripts
 compiler="aarch64-linux-gnu-"
 
+cd /tmp
 rm -rf $UTIL_FS
 mkdir -p $UTIL_FS
 
